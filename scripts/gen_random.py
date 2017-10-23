@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 
 from music_generator.analysis.play import play_array
 from music_generator.basic.random import monophonic_random
+from music_generator.basic.random import monophonic_random_osc
 
 
 def parse_args():
@@ -40,7 +41,8 @@ def main(length, note_duration):
     sample_rate = 44100
 
     n_notes = int(length / note_duration) + 1
-    y = monophonic_random(n_notes, note_duration, sample_rate)
+    # y = monophonic_random(n_notes, note_duration, sample_rate)
+    y = monophonic_random_osc(n_notes, note_duration, sample_rate)
     y = y[0:int(length * sample_rate)]
 
     play_array(y)
