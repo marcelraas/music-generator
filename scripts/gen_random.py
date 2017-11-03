@@ -4,7 +4,9 @@ from argparse import ArgumentParser
 
 from music_generator.analysis.play import play_array
 from music_generator.basic.random import monophonic_random
-from music_generator.basic.random import monophonic_random_osc
+from music_generator.basic.random import monophonic_notes
+from music_generator.synthesizer.oscillators import SquareOscillator
+from music_generator.synthesizer.oscillators import SineOscillator, AliasingSquareOscillator
 
 
 def parse_args():
@@ -13,7 +15,7 @@ def parse_args():
     arg_parser.add_argument('--length',
                             metavar='<LENGTH>',
                             dest='length',
-                            default=20,
+                            default=30,
                             type=float,
                             help='length in seconds')
 
@@ -38,11 +40,12 @@ def main(length, note_duration):
         int: program exit-code
     """
 
-    sample_rate = 44100
+    sample_rate = 88200
 
     n_notes = int(length / note_duration) + 1
-    # y = monophonic_random(n_notes, note_duration, sample_rate)
-    y = monophonic_random_osc(n_notes, note_duration, sample_rate)
+
+    y = monophonic_notes(n_notes, note_duration, 0.2, AliasingSquareOscillator(sample_rate))
+
     y = y[0:int(length * sample_rate)]
 
     play_array(y)

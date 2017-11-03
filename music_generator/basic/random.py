@@ -1,6 +1,10 @@
 import numpy as np
 
+from music_generator.musical.notes import NOTES_DF, Note
+
 from music_generator.synthesizer.oscillators import SineOscillator
+from music_generator.synthesizer.oscillators import AdditiveOscillator
+from music_generator.synthesizer.oscillators import SquareOscillator
 
 
 def monophonic_random(n_notes, note_duration, sample_rate=44100):
@@ -33,23 +37,42 @@ def monophonic_random(n_notes, note_duration, sample_rate=44100):
     return y
 
 
+def monophonic_notes(n_notes,
+                     note_duration,
+                     amp,
+                     osc=SineOscillator(44100)):
+
+    octs = np.random.randint(3, 4, size=n_notes)
+    i_note = np.random.randint(0, len(NOTES_DF), size=n_notes)
+    symbols = NOTES_DF.iloc[i_note].symbol
+
+    freqs = [Note(s, o).frequency()
+             for s, o in zip(symbols, octs)]
+
+    y = np.concatenate(list(map(lambda f: osc.generate(amp,
+                                                       note_duration,
+                                                       f,
+                                                       osc.phase),
+                                freqs)))
+
+    return y
+
+
 def monophonic_random_osc(n_notes,
                           note_duration,
-                          sample_rate=44100,
-                          osc=SineOscillator):
+                          amp,
+                          osc=SquareOscillator(44100)):
     """Reimplementation of monophonic_random, using oscillator class"""
 
     min_freq = 0
-    max_freq = 3200
-    amp = 0.8
-
-    sin = osc(sample_rate)
+    max_freq = 3600
 
     freqs = np.random.uniform(min_freq, max_freq, size=n_notes)
 
-    y = np.concatenate(list(map(lambda x: sin.generate(amp,
+    y = np.concatenate(list(map(lambda f: osc.generate(amp,
                                                        note_duration,
-                                                       x,
-                                                       sin.phase), freqs)))
+                                                       f,
+                                                       osc.phase),
+                                freqs)))
 
     return y
