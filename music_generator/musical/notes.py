@@ -18,10 +18,20 @@ def init_notes_df():
              .assign(symbol=lambda x: x.symbol + 'b')
              .assign(flat=1)])
 
-    return notes.reset_index(drop=True)
+    notes = notes[~notes.symbol.isin(['B#', 'Cb', 'E#', 'Fb'])]
+
+    return notes.reset_index()
 
 
 NOTES_DF = init_notes_df()
+NOTES_SHARP = NOTES_DF[NOTES_DF.flat == 0]
+NOTES_FLAT = NOTES_DF[NOTES_DF.sharp == 0]
+
+
+def semi_from_a4(symbol, octave):
+    semi_steps = NOTES_DF.set_index('symbol').loc[symbol].semi
+    semi_steps += (octave - 4) * 12
+    return semi_steps
 
 
 class Tuning(object):
@@ -39,12 +49,8 @@ class EqualTempered(object):
         self.a4_freq = a4_frequency
         self.semi_tone_ratio = 2**(1/12)
 
-    def calc_frequency(self, symbol, octave):
-
-        semi_steps = self.notes_df.loc[symbol].semi
-        semi_steps += (octave - 4) * 12
-
-        return self.a4_freq * self.semi_tone_ratio ** semi_steps
+    def calc_frequency(self, semi_from_a4):
+        return self.a4_freq * self.semi_tone_ratio ** semi_from_a4
 
 
 EQUAL_TEMPERED_A4_440 = EqualTempered(440)
@@ -53,9 +59,20 @@ EQUAL_TEMPERED_A4_440 = EqualTempered(440)
 class Note(object):
 
     def __init__(self, symbol, octave, tuning=EQUAL_TEMPERED_A4_440):
-        self.octave = octave
-        self.symbol = symbol
         self.tuning = tuning
+        self.semi_from_a4 = semi_from_a4(symbol, octave)
 
     def frequency(self):
-        return self.tuning.calc_frequency(self.symbol, self.octave)
+        return self.tuning.calc_frequency(self.semi_from_a4)
+
+    def octave(self):
+        return 4 + int((self.semi_from_a4 - 3) / 12)
+
+    def symbol(self, sharp=True):
+        semi = (self.semi_from_a4 % 12)
+        df = NOTES_SHARP if sharp else NOTES_FLAT
+        return df.set_index('semi').loc[semi].symbol
+
+    def __repr__(self):
+        return self.symbol() + str(self.octave())
+

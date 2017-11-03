@@ -8,11 +8,11 @@ def test_notes_df():
     df = init_notes_df()
 
     assert 'semi' in df
-    assert 'symbol' in df
     assert 'sharp' in df
     assert 'flat' in df
+    assert 'symbol' in df
 
-    assert len(df) == 21
+    assert len(df) == (21 - 4)
 
 
 def test_notes():
@@ -25,5 +25,15 @@ def test_notes():
 
     assert Note('F#', 5).frequency() == Note('Gb', 5).frequency()
 
-    pass
+
+def test_note_properties():
+
+    note = Note('C', 3)
+    assert note.octave() == 3
+    assert note.symbol() == 'C'
+
+    note = Note('B', 2)
+    assert note.octave() == 2
+    assert note.symbol() == 'B'
+
 
