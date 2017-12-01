@@ -6,6 +6,7 @@ from music_generator.musical.scales import GenericScale
 from music_generator.synthesizer.oscillators import SineOscillator
 from music_generator.synthesizer.oscillators import AdditiveOscillator
 from music_generator.synthesizer.oscillators import SquareOscillator
+from music_generator.musical.chords import MajorChordDefinition
 
 
 def monophonic_random(n_notes, note_duration, sample_rate=44100):
@@ -86,8 +87,7 @@ def monophonic_scale(n_notes,
                      osc=SquareOscillator(44100)):
     """Reimplementation of monophonic_random, using oscillator class"""
 
-    notes = scale.generate(3, 5)
-
+    notes = np.array(scale.generate(4, 5))
     freqs = np.array([n.frequency() for n in notes])
 
     p = [0.025, 0.1, 0.1, 0.1, 0.025, 0.1, 0.1, 0.1, 0.025]
@@ -107,12 +107,10 @@ def monophonic_scale(n_notes,
 
     # ix = np.random.randint(0, len(freqs), size=n_notes)
 
-    freqs = freqs[rw.astype(int)]
+    notes = notes[rw.astype(int)]
+    maj = MajorChordDefinition()
 
-    y = np.concatenate(list(map(lambda f: osc.generate(amp,
-                                                       note_duration,
-                                                       f,
-                                                       osc.phase),
-                                freqs)))
+    y = np.concatenate(list(map(
+        lambda f: osc.generate_chord(maj.generate_chord(f), note_duration, amp, osc.phase), notes)))
 
     return y

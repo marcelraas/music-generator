@@ -19,9 +19,29 @@ class Generator(object):
 
         return phase_vec
 
+    def generate_note(self, note, duration, amplitude, phase):
+        return self.generate(amplitude, duration, note.frequency(), phase)
+
+    def generate_chord(self, chord, duration, amplitude, phase=None):
+        if phase is None:
+            phase = self.phase
+
+        result = None
+        for note in chord.notes:
+            phase = phase
+            y = self.generate(amplitude, duration, note.frequency(), phase)
+            if result is not None:
+                result += y
+            else:
+                result = y
+
+        return result
 
     def duration_in_samples(self, duration):
         return duration * self.sample_rate
+
+    def generate(self, amplitude, duration, frequency, phase):
+        raise NotImplementedError('Pure virtual function called')
 
 
 class SineOscillator(Generator):
