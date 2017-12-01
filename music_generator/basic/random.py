@@ -1,6 +1,7 @@
 import numpy as np
 
-from music_generator.musical.notes import NOTES_DF, Note
+from music_generator.musical.notes import Note
+from music_generator.musical.scales import GenericScale
 
 from music_generator.synthesizer.oscillators import SineOscillator
 from music_generator.synthesizer.oscillators import AdditiveOscillator
@@ -37,25 +38,25 @@ def monophonic_random(n_notes, note_duration, sample_rate=44100):
     return y
 
 
-def monophonic_notes(n_notes,
-                     note_duration,
-                     amp,
-                     osc=SineOscillator(44100)):
-
-    octs = np.random.randint(3, 4, size=n_notes)
-    i_note = np.random.randint(0, len(NOTES_DF), size=n_notes)
-    symbols = NOTES_DF.iloc[i_note].symbol
-
-    freqs = [Note(s, o).frequency()
-             for s, o in zip(symbols, octs)]
-
-    y = np.concatenate(list(map(lambda f: osc.generate(amp,
-                                                       note_duration,
-                                                       f,
-                                                       osc.phase),
-                                freqs)))
-
-    return y
+# def monophonic_notes(n_notes,
+#                      note_duration,
+#                      amp,
+#                      osc=SineOscillator(44100)):
+#
+#     octs = np.random.randint(3, 4, size=n_notes)
+#     i_note = np.random.randint(0, notes, size=n_notes)
+#     symbols = NOTES_DF.iloc[i_note].symbol
+#
+#     freqs = [Note(s, o).frequency()
+#              for s, o in zip(symbols, octs)]
+#
+#     y = np.concatenate(list(map(lambda f: osc.generate(amp,
+#                                                        note_duration,
+#                                                        f,
+#                                                        osc.phase),
+#                                 freqs)))
+#
+#     return y
 
 
 def monophonic_random_osc(n_notes,
@@ -68,6 +69,28 @@ def monophonic_random_osc(n_notes,
     max_freq = 3600
 
     freqs = np.random.uniform(min_freq, max_freq, size=n_notes)
+
+    y = np.concatenate(list(map(lambda f: osc.generate(amp,
+                                                       note_duration,
+                                                       f,
+                                                       osc.phase),
+                                freqs)))
+
+    return y
+
+
+def monophonic_scale(n_notes,
+                     note_duration,
+                     amp,
+                     scale: GenericScale,
+                     osc=SquareOscillator(44100)):
+    """Reimplementation of monophonic_random, using oscillator class"""
+
+    notes = scale.generate(3, 5)
+
+    freqs = np.array([n.frequency() for n in notes])
+    ix = np.random.randint(0, len(freqs), size=n_notes)
+    freqs = freqs[ix]
 
     y = np.concatenate(list(map(lambda f: osc.generate(amp,
                                                        note_duration,

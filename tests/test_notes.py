@@ -19,3 +19,10 @@ def test_increment_octave():
 
     assert a2.get_symbol() == 'C'
     assert a2.get_octave() == 3
+
+
+def test_frequency():
+    a4 = Note('A', 4)
+    a3 = Note('A', 3)
+    assert a4.frequency() / 2 == a3.frequency()
+

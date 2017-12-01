@@ -19,6 +19,9 @@ class Note(object):
         self.semi_from_c0 += semitones
         return self
 
+    def frequency(self):
+        return (2 ** (self.get_semi_from_a4()/12.)) * 440
+
     @staticmethod
     def calc_semi_from_c0(symbol, octave):
         return BASE_NOTES.index(symbol) + octave * 12
