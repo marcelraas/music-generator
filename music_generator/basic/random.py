@@ -11,8 +11,8 @@ def monophonic_random(n_notes, note_duration, sample_rate=44100):
     """Generate monophonic random music
 
     Args:
-        n_notes (int): number of notes to generate
-        note_duration (float): duration of notes
+        n_notes (int): number of steps to generate
+        note_duration (float): duration of steps
         sample_rate (int): sample rate
 
     Returns:

@@ -1,39 +1,21 @@
 import numpy as np
 
-from music_generator.musical.notes import init_notes_df
-from music_generator.musical.notes import Note
+from music_generator.musical.notes import Note, _A4_BASE
 
 
-def test_notes_df():
-    df = init_notes_df()
-
-    assert 'semi' in df
-    assert 'sharp' in df
-    assert 'flat' in df
-    assert 'symbol' in df
-
-    assert len(df) == (21 - 4)
+def test_semitones():
+    a4 = Note('A', 4)
+    assert a4.get_semi_from_a4() == 0
 
 
-def test_notes():
-
-    note = Note('A', 2)
-    assert np.isclose(note.frequency(), 110)
-
-    note = Note('C#', 5)
-    assert np.isclose(note.frequency(), 1108.7305)
-
-    assert Note('F#', 5).frequency() == Note('Gb', 5).frequency()
+def test_increment():
+    a4 = Note('A', 4)
+    assert a4.increment(1).get_symbol() == 'A#'
 
 
-def test_note_properties():
+def test_increment_octave():
+    a2 = Note('A#', 2)
+    a2.increment(2)
 
-    note = Note('C', 3)
-    assert note.octave() == 3
-    assert note.symbol() == 'C'
-
-    note = Note('B', 2)
-    assert note.octave() == 2
-    assert note.symbol() == 'B'
-
-
+    assert a2.get_symbol() == 'C'
+    assert a2.get_octave() == 3

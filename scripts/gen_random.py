@@ -10,7 +10,7 @@ from music_generator.synthesizer.oscillators import SineOscillator, AliasingSqua
 
 
 def parse_args():
-    arg_parser = ArgumentParser(description='Generate notes')
+    arg_parser = ArgumentParser(description='Generate steps')
 
     arg_parser.add_argument('--length',
                             metavar='<LENGTH>',
