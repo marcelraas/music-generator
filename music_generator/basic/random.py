@@ -89,8 +89,25 @@ def monophonic_scale(n_notes,
     notes = scale.generate(3, 5)
 
     freqs = np.array([n.frequency() for n in notes])
-    ix = np.random.randint(0, len(freqs), size=n_notes)
-    freqs = freqs[ix]
+
+    p = [0.025, 0.1, 0.1, 0.1, 0.025, 0.1, 0.1, 0.1, 0.025]
+    p = p / np.sum(p)
+
+    steps = np.random.choice([-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                             n_notes - 1, p=p)
+
+    rw = np.zeros(n_notes)
+    rw[0] = np.random.randint(0, len(freqs))
+    for i, step in enumerate(steps):
+        rw[i+1] = rw[i] + step
+        if rw[i+1] >= len(freqs):
+            rw[i+1] = len(freqs) - 1 - (rw[i+1] - len(freqs))
+        if rw[i+1] < 0:
+            rw[i+1] = 0 - (rw[i+1] - 0)
+
+    # ix = np.random.randint(0, len(freqs), size=n_notes)
+
+    freqs = freqs[rw.astype(int)]
 
     y = np.concatenate(list(map(lambda f: osc.generate(amp,
                                                        note_duration,
