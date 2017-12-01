@@ -19,3 +19,6 @@ class GenericScale(object):
                 notes.append(generator_note.increment(step))
 
         return notes
+
+    def get_symbols(self):
+        return [x.get_symbol() for x in self.generate(0, 1)]

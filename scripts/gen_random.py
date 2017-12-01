@@ -49,7 +49,7 @@ def main(length, note_duration):
                          note_duration,
                          0.2,
                          GenericScale('C', [0, 2, 4, 5, 7, 9, 11]),
-                         SineOscillator(sample_rate))
+                         AliasingSquareOscillator(sample_rate))
 
     y = y[0:int(length * sample_rate)]
 

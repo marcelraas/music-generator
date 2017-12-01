@@ -28,8 +28,8 @@ class Generator(object):
 
         result = None
         for note in chord.notes:
-            phase = phase
-            y = self.generate(amplitude, duration, note.frequency(), phase)
+            self.phase = phase
+            y = self.generate(amplitude, duration, note.frequency(), self.phase)
             if result is not None:
                 result += y
             else:
