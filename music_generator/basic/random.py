@@ -7,6 +7,7 @@ from music_generator.synthesizer.oscillators import SineOscillator
 from music_generator.synthesizer.oscillators import AdditiveOscillator
 from music_generator.synthesizer.oscillators import SquareOscillator
 from music_generator.musical.chords import MajorChordDefinition, MinorChordDefinition, ChordInScaleDefinition
+from music_generator.basic.utils import bounded_random_walk_mirror
 
 
 def monophonic_random(n_notes, note_duration, sample_rate=44100):
@@ -88,30 +89,30 @@ def monophonic_scale(n_notes,
     """Reimplementation of monophonic_random, using oscillator class"""
 
     notes = np.array(scale.generate(4, 5))
-    freqs = np.array([n.frequency() for n in notes])
 
-    p = [0.025, 0.1, 0.1, 0.1, 0.025, 0.1, 0.1, 0.1, 0.025]
+    p = [0.4, 0.1, 0.2, 0.1, 0.0, 0.1, 0.2, 0.1, 0.4]
     p = p / np.sum(p)
 
     steps = np.random.choice([-4, -3, -2, -1, 0, 1, 2, 3, 4],
-                             n_notes - 1, p=p)
+                             int(n_notes/16) - 1, p=p)
 
-    rw = np.zeros(n_notes)
-    rw[0] = np.random.randint(0, len(freqs))
-    for i, step in enumerate(steps):
-        rw[i+1] = rw[i] + step
-        if rw[i+1] >= len(freqs):
-            rw[i+1] = len(freqs) - 1 - (rw[i+1] - len(freqs))
-        if rw[i+1] < 0:
-            rw[i+1] = 0 - (rw[i+1] - 0)
-
-    # ix = np.random.randint(0, len(freqs), size=n_notes)
+    rw = bounded_random_walk_mirror(steps, np.random.randint(0, len(notes)), 0, len(notes))
 
     notes = notes[rw.astype(int)]
-    # chord = MinorChordDefinition()
     cisd = ChordInScaleDefinition(scale)
 
     y = np.concatenate(list(map(
-        lambda f: osc.generate_chord(cisd.generate_chord(f), note_duration, amp, osc.phase), notes)))
+        lambda f: osc.generate_chord(cisd.generate_chord(f), note_duration * 16, amp, osc.phase), notes)))
+
+    p = [0.0005, 0.01, 0.1, 0.5, 0.0, 0.5, 0.1, 0.01, 0.0005]
+    p = p / np.sum(p)
+    steps = np.random.choice([-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                             n_notes - 1, p=p)
+    notes = np.array(scale.generate(6, 7))
+    rw = bounded_random_walk_mirror(steps, np.random.randint(0, len(notes)), 0, len(notes))
+    notes = notes[rw.astype(int)]
+
+    y += np.concatenate(list(map(
+        lambda f: osc.generate_note(f, note_duration, amp, osc.phase), notes)))
 
     return y

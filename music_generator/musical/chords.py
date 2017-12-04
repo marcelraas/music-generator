@@ -81,4 +81,3 @@ class Chord(object):
         else:
             return False
 
-

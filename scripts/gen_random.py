@@ -3,7 +3,7 @@ import sys
 from argparse import ArgumentParser
 
 from music_generator.analysis.play import play_array
-from music_generator.basic.random import monophonic_random
+from music_generator.basic.random import monophonic_random, monophonic_random_osc
 from music_generator.basic.random import monophonic_scale
 from music_generator.synthesizer.oscillators import SquareOscillator
 from music_generator.synthesizer.oscillators import SineOscillator, AliasingSquareOscillator
@@ -16,14 +16,14 @@ def parse_args():
     arg_parser.add_argument('--length',
                             metavar='<LENGTH>',
                             dest='length',
-                            default=30,
+                            default=120,
                             type=float,
                             help='length in seconds')
 
     arg_parser.add_argument('--note_duration',
                             metavar='<NOTE_DURATION>',
                             dest='note_duration',
-                            default=0.2,
+                            default=0.05,
                             type=float,
                             help='note duration')
 
@@ -44,11 +44,18 @@ def main(length, note_duration):
     sample_rate = 88200
 
     n_notes = int(length / note_duration) + 1
+    n_notes = int(n_notes / 16) * 16
+
+    # y = monophonic_random_osc(n_notes,
+    #                           note_duration,
+    #                           0.2,
+    #                           AliasingSquareOscillator(sample_rate))
 
     y = monophonic_scale(n_notes,
                          note_duration,
-                         0.2,
-                         GenericScale('C', [0, 2, 4, 5, 7, 9, 11]),
+                         0.1,
+                         # GenericScale('C', [0, 2, 4, 5, 7, 9, 11]),
+                         GenericScale('F', [0, 1, 4, 5, 7, 8, 10]),
                          AliasingSquareOscillator(sample_rate))
 
     y = y[0:int(length * sample_rate)]
