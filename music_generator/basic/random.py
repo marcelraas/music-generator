@@ -1,5 +1,6 @@
 import numpy as np
 
+from music_generator.basic.signalproc import SamplingInfo
 from music_generator.musical.notes import Note
 from music_generator.musical.scales import GenericScale
 
@@ -64,7 +65,7 @@ def monophonic_random(n_notes, note_duration, sample_rate=44100):
 def monophonic_random_osc(n_notes,
                           note_duration,
                           amp,
-                          osc=SquareOscillator(44100)):
+                          osc=SquareOscillator(SamplingInfo(44100))):
     """Reimplementation of monophonic_random, using oscillator class"""
 
     min_freq = 0
@@ -85,7 +86,7 @@ def monophonic_scale(n_notes,
                      note_duration,
                      amp,
                      scale: GenericScale,
-                     osc=SquareOscillator(44100)):
+                     osc=SquareOscillator(SamplingInfo(44100))):
     """Reimplementation of monophonic_random, using oscillator class"""
 
     notes = np.array(scale.generate(4, 5))

@@ -1,6 +1,5 @@
 from music_generator.musical.notes import Note
 from music_generator.musical.timing import Signature, Tempo, Duration
-from music_generator.synthesizer.instrument import Instrument
 
 from copy import deepcopy
 import numpy as np
@@ -26,6 +25,14 @@ class PositionedNote(object):
         """
         self.offset += offset
         return self
+
+    def get_moment_release(self):
+        """Get moment of release of this note
+
+        Returns:
+            Duration
+        """
+        return self.offset + self.duration
 
     def clone(self):
         """Create a clone of itself
@@ -88,21 +95,8 @@ class Measure(object):
 
 
 class Track(object):
-    def __init__(self, measures, instrument=None):
+    def __init__(self, measures):
         self.measures = measures
-        self.instrument = instrument
-        self.velocity = 0.2
-
-    def generate_audio(self, pcm=None, sample_rate=44100):
-        assert isinstance(self.instrument, Instrument)
-
-        positioned_notes = self.generate_notes()
-
-        for note in positioned_notes:
-            assert False
-            # pcm = positioned_mix(pcm, note.position.samples(sample_rate), self.instrument.generate_note(note.note, note.duration, self.velocity))
-
-        return pcm
 
     def generate_notes(self):
 

@@ -48,6 +48,12 @@ class Duration(object):
         """
         return self.seconds * (tempo.bpm / 60.)
 
+    def __ge__(self, other):
+        return self.seconds >= other.seconds
+
+    def __le__(self, other):
+        return self.seconds <= other.seconds
+
     def __repr__(self):
         return "{} s".format(self.seconds)
 

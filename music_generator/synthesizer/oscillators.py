@@ -1,17 +1,15 @@
+from music_generator.basic.signalproc import SamplingInfo
+
 import numpy as np
 
 
 class Generator(object):
-    def __init__(self, sample_rate):
-        self.sample_rate = sample_rate
+    def __init__(self, sampling_info: SamplingInfo):
+        self.sampling_info = sampling_info
         self.phase = 0
 
-    @property
-    def phase_step(self):
-        return 1. / self.sample_rate
-
     def get_phase_vector(self, duration, frequency, phase, update_phase=False):
-        time_vec = np.arange(0, duration, self.phase_step)
+        time_vec = np.arange(0, duration, self.sampling_info.phase_step)
         phase_vec = time_vec * 2 * np.pi * frequency + phase
 
         if update_phase:
@@ -40,15 +38,15 @@ class Generator(object):
         return result
 
     def duration_in_samples(self, duration):
-        return duration * self.sample_rate
+        return duration * self.sampling_info
 
     def generate(self, amplitude, duration, frequency, phase):
         raise NotImplementedError('Pure virtual function called')
 
 
 class SineOscillator(Generator):
-    def __init__(self, sample_rate):
-        Generator.__init__(self, sample_rate)
+    def __init__(self, sampling_info: SamplingInfo):
+        Generator.__init__(self, sampling_info)
 
     def generate(self, amplitude, duration, frequency, phase):
 
@@ -56,8 +54,8 @@ class SineOscillator(Generator):
 
 
 class AdditiveOscillator(Generator):
-    def __init__(self, sample_rate, harmonics):
-        Generator.__init__(self, sample_rate)
+    def __init__(self, sampling_info: SamplingInfo, harmonics):
+        Generator.__init__(self, sampling_info)
         self.harmonics = np.array(harmonics)
 
     def generate(self, amplitude, duration, frequency, phase):
@@ -68,7 +66,7 @@ class AdditiveOscillator(Generator):
         ix = np.arange(0, len(phase_vec))
         step_harm = (np.arange(0, len(self.harmonics)) + 1)
 
-        max_harm = self.sample_rate / 2 / frequency
+        max_harm = self.sampling_info.nyquist / frequency
 
         harmonics = self.harmonics[step_harm < max_harm]
         step_harm = step_harm[step_harm < max_harm]
@@ -82,16 +80,16 @@ class AdditiveOscillator(Generator):
 
 
 class SquareOscillator(AdditiveOscillator):
-    def __init__(self, sample_rate):
-        k = np.arange(1, sample_rate/50)
+    def __init__(self, sampling_info: SamplingInfo):
+        k = np.arange(1, sampling_info.sample_rate / 50)
         harmonics = 1 / k
         harmonics[np.arange(1, len(harmonics), 2)] = 0
-        AdditiveOscillator.__init__(self, sample_rate, harmonics)
+        AdditiveOscillator.__init__(self, sampling_info, harmonics)
 
 
 class AliasingSquareOscillator(Generator):
-    def __init__(self, sample_rate):
-        Generator.__init__(self, sample_rate)
+    def __init__(self, sampling_info: SamplingInfo):
+        Generator.__init__(self, sampling_info)
 
     def generate(self, amplitude, duration, frequency, phase):
 
