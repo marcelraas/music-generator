@@ -31,12 +31,12 @@ class Note(object):
         return self.semi_from_c0 - _A4_BASE
 
     def increment(self, semitones):
-        """Increment note with this number of semitones"""
+        """Increment notes with this number of semitones"""
         self.semi_from_c0 += semitones
         return self
 
     def frequency(self):
-        """Calculate frequency of note"""
+        """Calculate frequency of notes"""
         return (2 ** (self.get_semi_from_a4()/12.)) * _A4_TUNING
 
     @staticmethod
@@ -44,8 +44,8 @@ class Note(object):
         """Calculate semitones from c0
 
         Args:
-            symbol: symbol of note (e.g. C, C#, etc., do not use flats)
-            octave: octave of note (see doc on top of module)
+            symbol: symbol of notes (e.g. C, C#, etc., do not use flats)
+            octave: octave of notes (see doc on top of module)
         """
         return BASE_NOTES.index(symbol) + octave * 12
 

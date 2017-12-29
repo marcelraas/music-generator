@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Duration(object):
     def __init__(self, seconds):
         self.seconds = seconds
@@ -37,12 +39,30 @@ class Duration(object):
         """
         return self.seconds * (tempo.bpm / 60.)
 
+    def __repr__(self):
+        return "{} s".format(self.seconds)
+
+    def __iadd__(self, other):
+        self.seconds += other.seconds
+        return self
+
+    def __add__(self, other):
+        new = deepcopy(other)
+        new += self
+        return new
+
+    def __mul__(self, x: float):
+        self.seconds = self.seconds * x
+        return self
+
+    __rmul__ = __mul__
+
 
 class Tempo(object):
     def __init__(self, bpm: float):
         """Define a tempo by beats per minute
 
-        A beat corresponds to a quarter note.
+        A beat corresponds to a quarter notes.
 
         Args:
             bpm: beats per minute, should be larger than 0
@@ -52,18 +72,35 @@ class Tempo(object):
         self.bpm = bpm
 
     def quarter_note(self):
-        """Get length of a quarter note in seconds
+        """Get length of a quarter notes in seconds
 
         Returns:
             Duration: duration object
         """
         return Duration(60. / self.bpm)
 
+    def __repr__(self):
+        return "{:2.1f} bpm".format(self.bpm)
+
 
 class Signature(object):
     def __init__(self, numerator, denominator):
         self.numerator = numerator
         self.denominator = denominator
+
+    def get_num_quarter_notes(self):
+        """Get beat span expressed in quarter notes
+
+        Examples:
+            4/4 has 4 quarter notes
+            3/4 has 3 quarter notes
+            12/8 has 6 quarter notes
+            15/16 has 3.75 quarter notes
+
+        Returns:
+            float
+        """
+        return self.numerator / (self.denominator / 4)
 
     def __repr__(self):
         return '{}/{}'.format(self.numerator, self.denominator)

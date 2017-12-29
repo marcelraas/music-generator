@@ -19,7 +19,9 @@ class Generator(object):
 
         return phase_vec
 
-    def generate_note(self, note, duration, amplitude, phase):
+    def generate_note(self, note, duration, amplitude, phase=None):
+        if phase is None:
+            phase = self.phase
         return self.generate(amplitude, duration, note.frequency(), phase)
 
     def generate_chord(self, chord, duration, amplitude, phase=None):

@@ -23,9 +23,9 @@ def parse_args():
     arg_parser.add_argument('--note_duration',
                             metavar='<NOTE_DURATION>',
                             dest='note_duration',
-                            default=0.05,
+                            default=0.10,
                             type=float,
-                            help='note duration')
+                            help='notes duration')
 
     return arg_parser.parse_args()
 
@@ -35,7 +35,7 @@ def main(length, note_duration):
 
     Args:
         length (float): length in seconds
-        note_duration (float): duration of a single note in seconds
+        note_duration (float): duration of a single notes in seconds
 
     Returns:
         int: program exit-code
@@ -54,8 +54,8 @@ def main(length, note_duration):
     y = monophonic_scale(n_notes,
                          note_duration,
                          0.1,
-                         # GenericScale('C', [0, 2, 4, 5, 7, 9, 11]),
-                         GenericScale('F', [0, 1, 4, 5, 7, 8, 10]),
+                         GenericScale('C', [0, 2, 4, 5, 7, 9, 11]),
+                         # GenericScale('F', [0, 1, 4, 5, 7, 8, 10]),
                          AliasingSquareOscillator(sample_rate))
 
     y = y[0:int(length * sample_rate)]
