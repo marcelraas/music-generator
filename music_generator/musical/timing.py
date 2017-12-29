@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 class Duration(object):
     def __init__(self, seconds):
         self.seconds = seconds
@@ -13,9 +14,17 @@ class Duration(object):
             tempo (Tempo): tempo
 
         Returns:
-            Duration instance
+            Duration: new instance
         """
         return cls(quarters * tempo.quarter_note().seconds)
+
+    def clone(self):
+        """Creates a clone of itself
+
+        Returns:
+            Duration: new instance
+        """
+        return deepcopy(self)
 
     def samples(self, sample_rate: float):
         """Express duration in number of samples
@@ -47,15 +56,17 @@ class Duration(object):
         return self
 
     def __add__(self, other):
-        new = deepcopy(other)
-        new += self
+        new = self.clone()
+        new += other
         return new
 
     def __mul__(self, x: float):
-        self.seconds = self.seconds * x
-        return self
+        ret = self.clone()
+        ret.seconds = self.seconds * x
+        return ret
 
     __rmul__ = __mul__
+
 
 
 class Tempo(object):

@@ -9,6 +9,8 @@ Conventions:
     * Symbols are written in upper case
 """
 
+from copy import deepcopy
+
 BASE_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 _A4_BASE = 57
 _A4_TUNING = 440
@@ -51,6 +53,14 @@ class Note(object):
 
     def __repr__(self):
         return '{}{}'.format(self.get_symbol(), self.get_octave())
+
+    def clone(self):
+        """Create a clone of itself
+
+        Returns:
+            Note: clone
+        """
+        return deepcopy(self)
 
 
 

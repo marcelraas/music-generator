@@ -6,9 +6,39 @@ from copy import deepcopy
 import numpy as np
 
 
-class Bar(object):
+class PositionedNote(object):
+    def __init__(self, note: Note, offset: Duration, duration: Duration):
+        self.note = note
+        self.offset = offset
+        self.duration = duration
+
+    def __repr__(self):
+        return '{} at {} for {}'.format(self.note, self.offset, self.duration)
+
+    def add_offset(self, offset: Duration):
+        """Add an offset to this note
+
+        Args:
+            offset: Duration
+
+        Returns:
+            PositionedNote: itself
+        """
+        self.offset += offset
+        return self
+
+    def clone(self):
+        """Create a clone of itself
+
+        Returns:
+            PositionedNote: new instance
+        """
+        return deepcopy(self)
+
+
+class Measure(object):
     def __init__(self, tempo: Tempo, signature: Signature):
-        """Create a musical bar
+        """Create a musical measure
 
         Args:
             tempo: tempo
@@ -16,6 +46,7 @@ class Bar(object):
         """
         self.tempo = tempo
         self.signature = signature
+        self.notes = []
 
     def total_time(self):
         """Get total time
@@ -25,27 +56,8 @@ class Bar(object):
         """
         return self.signature.get_num_quarter_notes() * self.tempo.quarter_note()
 
-    def __repr__(self):
-        return "{} at {}".format(str(self.signature), self.tempo)
-
-
-class PositionedNote(object):
-    def __init__(self, note: Note, position: Duration, duration: Duration):
-        self.note = note
-        self.position = position
-        self.duration = duration
-
-    def __repr__(self):
-        return '{} at {} for {}'.format(self.note, self.position, self.duration)
-
-
-class Measure(object):
-    def __init__(self, bar):
-        self.bar = bar
-        self.notes = []
-
     def add_note(self, note: Note, position: float, duration: float):
-        """Add a notes to a bar
+        """Add a note to a measure
 
         Args:
             note: notes to play
@@ -55,10 +67,24 @@ class Measure(object):
         Returns:
             Measure: self
         """
-        position = Duration.from_num_beats(position, self.bar.tempo)
-        duration = Duration.from_num_beats(duration, self.bar.tempo)
+        position = Duration.from_num_beats(position, self.tempo)
+        duration = Duration.from_num_beats(duration, self.tempo)
         self.notes.append(PositionedNote(note, position, duration))
         return self
+
+    def generate_notes(self, offset: Duration):
+        """Generate notes with an additional offset (typically start of measure)
+
+        Args:
+            offset (Duration): start of measure
+
+        Returns:
+            list[PositionedNote]
+        """
+        return [note.clone().add_offset(offset) for note in self.notes]
+
+    def __repr__(self):
+        return "{} at {}".format(str(self.signature), self.tempo)
 
 
 class Track(object):
@@ -80,17 +106,11 @@ class Track(object):
 
     def generate_notes(self):
 
-        # TODO: pretty UGLY
         notes = []
         offset = Duration(0)
         for measure in self.measures:
-            new_notes = []
-            for note in measure.notes:
-                new_note = deepcopy(note)
-                new_note.position += offset
-                new_notes.append(new_note)
-            notes += new_notes
-            offset += measure.bar.total_time()
+            notes += measure.generate_notes(offset)
+            offset += measure.total_time()
 
         return notes
 

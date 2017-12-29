@@ -25,3 +25,19 @@ def test_duration():
     assert duration.beats(tempo) == 0.5
 
     assert Duration.from_num_beats(1, Tempo(120)).samples(44100) == 22050
+
+
+def test_duration_operators():
+    duration = Duration.from_num_beats(2, Tempo(120))
+    assert duration.seconds == 1
+
+    assert (duration * 2).seconds == 2
+    assert duration.seconds == 1
+
+    assert (2 * duration).seconds == 2
+    assert duration.seconds == 1
+
+    assert (duration + Duration(1)).seconds == 2
+    assert duration.seconds == 1
+
+    pass
