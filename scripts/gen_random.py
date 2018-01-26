@@ -6,7 +6,7 @@ from music_generator.analysis.play import play_array
 from music_generator.basic.random import monophonic_scale
 from music_generator.synthesizer.oscillators import AliasingSquareOscillator
 from music_generator.musical.scales import GenericScale
-from music_generator.basic.signalproc import SamplingInfo
+from music_generator.basic.signalproc import SamplingInfo, apply_filter
 
 
 def parse_args():
