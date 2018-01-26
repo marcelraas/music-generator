@@ -1,4 +1,4 @@
-from scipy import signal
+from scipy import signal, fftpack
 from functools import total_ordering
 
 import numpy as np
@@ -28,10 +28,16 @@ class SamplingInfo(object):
         return self.sample_rate < other.sample_rate
 
 
+# TODO: make this a reliable unit tested function that can handle all corner cases
 def mix_at(array, y, at=0):
-    assert len(y) + at <= len(array)
+    if len(y) + at >= len(array):
+        n_extra_samples = int(len(y) + at - len(array))
+        array = np.concatenate(
+            (array, np.zeros(shape=n_extra_samples)))
     at = int(at)
     array[at:(at+len(y))] += y
+
+    return array
 
 
 def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float, order=5, type='lowpass'):
@@ -53,3 +59,5 @@ def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float
     # noinspection PyTupleAssignmentBalance
     b, a = signal.butter(order, normal_cutoff, btype=type, analog=False, output='ba')
     return signal.filtfilt(b, a, data, padlen=150)
+
+
