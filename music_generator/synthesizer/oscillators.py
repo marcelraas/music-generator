@@ -8,8 +8,7 @@ class Generator(object):
         self.sampling_info = sampling_info
         self.phase = 0
 
-    def get_phase_vector(self, duration, frequency, phase=None, update_phase=False):
-
+    def get_phase_vector(self, duration, frequency, phase, update_phase=False):
         if phase is None:
             phase = self.phase
 
