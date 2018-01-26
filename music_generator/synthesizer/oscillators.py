@@ -9,10 +9,21 @@ class Generator(object):
         self.phase = 0
 
     def get_phase_vector(self, duration, frequency, phase, update_phase=False):
+        """Get a phase vector
+
+        Args:
+            duration (float): duration in seconds
+            frequency (float): frequency in Hertz
+            phase (float): phase in rad
+            update_phase (bool): whether or not to update the internal phase
+
+        Returns:
+            phase_vector (np.array[float])
+        """
         if phase is None:
             phase = self.phase
 
-        time_vec = np.arange(0, duration, self.sampling_info.phase_step)
+        time_vec = np.arange(0, duration, self.sampling_info.delta_t)
         phase_vec = time_vec * 2 * np.pi * frequency + phase
 
         if update_phase:
@@ -82,14 +93,6 @@ class AdditiveOscillator(Generator):
         return generated
 
 
-class SquareOscillator(AdditiveOscillator):
-    def __init__(self, sampling_info: SamplingInfo):
-        k = np.arange(1, sampling_info.sample_rate / 50)
-        harmonics = 1 / k
-        harmonics[np.arange(1, len(harmonics), 2)] = 0
-        AdditiveOscillator.__init__(self, sampling_info, harmonics)
-
-
 class AliasingSquareOscillator(Generator):
     def __init__(self, sampling_info: SamplingInfo):
         Generator.__init__(self, sampling_info)
@@ -121,6 +124,46 @@ class FilteredOscillator(Generator):
         y = self.base_generator.generate(amplitude, duration, frequency, phase)
         y = apply_filter(y, self.sampling_info, self.cutoff_freq, type=self.filter_type, order=self.order)
         return y
+
+
+class LinearAdsrGenerator(Generator):
+    def __init__(self, attack, decay, sustain, release, oscillator):
+        Generator.__init__(self, oscillator.sampling_info)
+        self.attack = attack
+        self.decay = decay
+        self.sustain = sustain
+        self.release = release
+        self.oscillator = oscillator
+
+        dt = self.sampling_info.delta_t
+
+        self.attack_envelope = np.arange(0, attack, dt) / attack * 1 \
+            if attack > 0 else np.array([])
+        self.decay_envelope = np.arange(0, decay, dt) / decay * (sustain - 1) + 1 \
+            if decay > 0 else np.array([])
+        self.release_envelope = -np.arange(0, release, dt) / release * sustain + sustain \
+            if release > 0 else np.array([])
+
+        if self.release < 0:
+            self.release = 0
+
+    def _generate_envelope(self, duration):
+
+        sustain_samples = int(np.ceil((duration - self.attack - self.decay) / self.sampling_info.delta_t))
+        sustain_envelope = np.array(sustain_samples*[self.sustain])
+
+        return np.concatenate((self.attack_envelope, self.decay_envelope, sustain_envelope, self.release_envelope))
+
+    def generate(self, amplitude, duration, frequency, phase=None):
+
+        raw = self.oscillator.generate(amplitude,
+                                       duration + self.release,
+                                       frequency,
+                                       phase)
+
+        return raw * self._generate_envelope(duration)
+
+
 
 
 
