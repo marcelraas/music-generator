@@ -1,4 +1,7 @@
+from scipy import signal
+
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class SamplingInfo(object):
@@ -22,3 +25,23 @@ def mix_at(array, y, at=0):
     at = int(at)
     array[at:(at+len(y))] += y
 
+
+def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float, order=5, type='lowpass'):
+    """Apply filter
+
+    Applies a Butterworth filter to the data.
+
+    Args:
+        data (np.array): data to be filtered
+        sampling_info (SamplingInfo): sampling info instance
+        cutoff_freq (float): cut-off frequency in Hertz
+        order (int): order of the Butterworth filter
+        type (str): lowpass, highpass, bandpass or bandstop
+
+    Returns:
+
+    """
+    normal_cutoff = cutoff_freq / sampling_info.nyquist
+    # noinspection PyTupleAssignmentBalance
+    b, a = signal.butter(4, normal_cutoff, btype=type, analog=False, output='ba')
+    return signal.filtfilt(b, a, data, padlen=150)

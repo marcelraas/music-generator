@@ -3,10 +3,8 @@ import sys
 from argparse import ArgumentParser
 
 from music_generator.analysis.play import play_array
-from music_generator.basic.random import monophonic_random, monophonic_random_osc
 from music_generator.basic.random import monophonic_scale
-from music_generator.synthesizer.oscillators import SquareOscillator
-from music_generator.synthesizer.oscillators import SineOscillator, AliasingSquareOscillator
+from music_generator.synthesizer.oscillators import AliasingSquareOscillator
 from music_generator.musical.scales import GenericScale
 from music_generator.basic.signalproc import SamplingInfo
 

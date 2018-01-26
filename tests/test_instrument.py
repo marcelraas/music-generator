@@ -1,6 +1,6 @@
 from music_generator.synthesizer.instrument import Instrument
 from music_generator.synthesizer.oscillators import AliasingSquareOscillator
-from music_generator.basic.signalproc import SamplingInfo
+from music_generator.basic.signalproc import SamplingInfo, apply_filter
 from music_generator.musical.songs import vader_jacob
 
 from music_generator.analysis.play import play_array
@@ -17,5 +17,7 @@ def test_generation():
 
     # Interactively you can listen to it, bit annoying to have to wait for it during testing
     # play_array(y, sampling_info.sample_rate)
+
+    play_array(apply_filter(y, sampling_info, 5e3))
 
 
