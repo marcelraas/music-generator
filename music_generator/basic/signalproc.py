@@ -1,9 +1,11 @@
 from scipy import signal
+from functools import total_ordering
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
+@total_ordering
 class SamplingInfo(object):
     def __init__(self, sample_rate: int):
         self.sample_rate = sample_rate
@@ -18,6 +20,12 @@ class SamplingInfo(object):
 
     def generate_silence(self, seconds):
         return np.zeros(shape=int(seconds * self.sample_rate))
+
+    def __eq__(self, other):
+        return self.sample_rate == other.sample_rate
+
+    def __lt__(self, other):
+        return self.sample_rate < other.sample_rate
 
 
 def mix_at(array, y, at=0):
@@ -43,5 +51,5 @@ def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float
     """
     normal_cutoff = cutoff_freq / sampling_info.nyquist
     # noinspection PyTupleAssignmentBalance
-    b, a = signal.butter(4, normal_cutoff, btype=type, analog=False, output='ba')
+    b, a = signal.butter(order, normal_cutoff, btype=type, analog=False, output='ba')
     return signal.filtfilt(b, a, data, padlen=150)
