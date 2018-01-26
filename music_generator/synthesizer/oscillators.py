@@ -1,4 +1,4 @@
-from music_generator.basic.signalproc import SamplingInfo
+from music_generator.basic.signalproc import SamplingInfo, apply_filter
 
 import numpy as np
 
@@ -8,7 +8,11 @@ class Generator(object):
         self.sampling_info = sampling_info
         self.phase = 0
 
-    def get_phase_vector(self, duration, frequency, phase, update_phase=False):
+    def get_phase_vector(self, duration, frequency, phase=None, update_phase=False):
+
+        if phase is None:
+            phase = self.phase
+
         time_vec = np.arange(0, duration, self.sampling_info.phase_step)
         phase_vec = time_vec * 2 * np.pi * frequency + phase
 
@@ -96,6 +100,28 @@ class AliasingSquareOscillator(Generator):
         phase_vec = self.get_phase_vector(duration, frequency, phase, update_phase=True)
         return amplitude * np.sign(np.sin(phase_vec))
 
+
+class FilteredOscillator(Generator):
+    def __init__(self,
+                 sampling_info: SamplingInfo,
+                 cutoff_freq: float,
+                 filter_type: str,
+                 base_generator: Generator,
+                 order=5):
+        Generator.__init__(self, sampling_info)
+        self.cutoff_freq = cutoff_freq
+        self.filter_type = filter_type
+        self.base_generator = base_generator
+        self.order = order
+
+        assert self.base_generator.sampling_info == self.sampling_info, \
+            "SamplingInfo of base_generator does not match the value in parameter sampling_info"
+
+    def generate(self, amplitude, duration, frequency, phase=None):
+
+        y = self.base_generator.generate(amplitude, duration, frequency, phase)
+        y = apply_filter(y, self.sampling_info, self.cutoff_freq, type=self.filter_type, order=self.order)
+        return y
 
 
 

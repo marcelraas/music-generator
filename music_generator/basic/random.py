@@ -7,6 +7,7 @@ from music_generator.musical.scales import GenericScale
 from music_generator.synthesizer.oscillators import SineOscillator
 from music_generator.synthesizer.oscillators import AdditiveOscillator
 from music_generator.synthesizer.oscillators import SquareOscillator
+from music_generator.synthesizer.oscillators import FilteredOscillator
 from music_generator.musical.chords import MajorChordDefinition, MinorChordDefinition, ChordInScaleDefinition
 from music_generator.basic.utils import bounded_random_walk_mirror
 
@@ -15,9 +16,11 @@ def monophonic_scale(n_notes,
                      note_duration,
                      amp,
                      scale: GenericScale,
-                     osc=SquareOscillator(SamplingInfo(44100))):
+                     base_osc=SquareOscillator,
+                     sampling_info=SamplingInfo(44100)):
     """Reimplementation of monophonic_random, using oscillator class"""
 
+    base_osc = SquareOscillator(sampling_info)
     notes = np.array(scale.generate(4, 5))
 
     p = [0.1, 0.1, 0.3, 0.2, 0.0, 0.2, 0.3, 0.1, 0.1]
@@ -31,10 +34,13 @@ def monophonic_scale(n_notes,
     notes = notes[rw.astype(int)]
     cisd = ChordInScaleDefinition(scale)
 
-    y = np.concatenate(list(map(
-        lambda f: osc.generate_chord(cisd.generate_chord(f), note_duration * 16, amp, osc.phase), notes)))
+    chord_generator = FilteredOscillator(sampling_info, 2000, "lowpass", base_osc)
+    # chord_generator = SquareOscillator(sampling_info)
 
-    y = apply_filter(y, osc.sampling_info, 2000)
+    y = np.concatenate(list(map(
+        lambda f: chord_generator.generate_chord(cisd.generate_chord(f), note_duration * 16, amp, 0), notes)))
+
+    # y = apply_filter(y, sampling_info, 2000)
 
     p = [0.0005, 0.01, 0.1, 0.3, 0.0, 0.3, 0.1, 0.01, 0.0005]
     p = p / np.sum(p)
@@ -44,10 +50,13 @@ def monophonic_scale(n_notes,
     rw = bounded_random_walk_mirror(steps, np.random.randint(0, len(notes)), 0, len(notes))
     notes = notes[rw.astype(int)]
 
-    y_lead = np.concatenate(list(map(
-        lambda f: osc.generate_note(f, note_duration, amp, osc.phase), notes)))
+    lead_generator = FilteredOscillator(sampling_info, 10000, "lowpass", base_osc, order=1)
+    # lead_generator = SquareOscillator(sampling_info)
 
-    y_lead = apply_filter(y_lead, osc.sampling_info, cutoff_freq=10000, order=1, type='lowpass')
+    y_lead = np.concatenate(list(map(
+        lambda f: lead_generator.generate_note(f, note_duration, amp, 0), notes)))
+
+    # y_lead = apply_filter(y_lead, sampling_info, cutoff_freq=10000, order=1, type='lowpass')
 
     y += y_lead
 
