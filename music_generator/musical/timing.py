@@ -74,7 +74,6 @@ class Duration(object):
     __rmul__ = __mul__
 
 
-
 class Tempo(object):
     def __init__(self, bpm: float):
         """Define a tempo by beats per minute

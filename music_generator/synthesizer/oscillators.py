@@ -147,7 +147,27 @@ class LinearAdsrGenerator(Generator):
         if self.release < 0:
             self.release = 0
 
+    def _match_shapes(self, array, n_samples, max_mismatch=2):
+        # TODO: this method is pretty ugly, can we solve it differently
+        if abs(len(array) - n_samples) > max_mismatch:
+            raise ValueError()
+        if len(array) == n_samples:
+            return array
+        elif len(array) > n_samples:
+            return array[0:n_samples]
+        else:
+            return np.concatenate((array[0:n_samples], np.zeros(shape=(n_samples - len(array),),)))
+
     def _generate_envelope(self, duration):
+
+        # If note is shorter than attack + decay, append release after current phase and scale with current amp
+        sustain_time = duration - self.attack - self.decay
+        if sustain_time < 0:
+            start = np.concatenate((self.attack_envelope, self.decay_envelope))
+            samples_until_note_release = start[0:int(duration * self.sampling_info.sample_rate)]
+            note_release_amp = samples_until_note_release[-1]
+            factor = note_release_amp / self.sustain if self.sustain != 0 else 0
+            return np.concatenate((samples_until_note_release, self.release_envelope * factor))
 
         sustain_samples = int(np.ceil((duration - self.attack - self.decay) / self.sampling_info.delta_t))
         sustain_envelope = np.array(sustain_samples*[self.sustain])
@@ -161,7 +181,10 @@ class LinearAdsrGenerator(Generator):
                                        frequency,
                                        phase)
 
-        return raw * self._generate_envelope(duration)
+        # TODO: due to rounding errors we have to pad 0's or remove a few samples from the envelope
+        envelope = self._match_shapes(self._generate_envelope(duration), raw.shape[0])
+
+        return raw * envelope
 
 
 
