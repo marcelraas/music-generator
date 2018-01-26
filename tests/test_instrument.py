@@ -18,6 +18,6 @@ def test_generation():
     # Interactively you can listen to it, bit annoying to have to wait for it during testing
     # play_array(y, sampling_info.sample_rate)
 
-    play_array(apply_filter(y, sampling_info, 5e3))
+    # play_array(apply_filter(y, sampling_info, 5e3))
 
 
