@@ -11,7 +11,7 @@ class SamplingInfo(object):
         self.sample_rate = sample_rate
 
     @property
-    def phase_step(self):
+    def delta_t(self):
         return 1. / self.sample_rate
 
     @property
