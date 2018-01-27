@@ -115,14 +115,18 @@ class FilteredOscillator(Generator):
         self.filter_type = filter_type
         self.base_generator = base_generator
         self.order = order
+        self.couple_velocity = False
 
         assert self.base_generator.sampling_info == self.sampling_info, \
             "SamplingInfo of base_generator does not match the value in parameter sampling_info"
 
     def generate(self, amplitude, duration, frequency, phase=None):
 
+        cutoff_freq = self.cutoff_freq if self.couple_velocity is False \
+            else self.cutoff_freq * amplitude / self.couple_velocity
+
         y = self.base_generator.generate(amplitude, duration, frequency, phase)
-        y = apply_filter(y, self.sampling_info, self.cutoff_freq, type=self.filter_type, order=self.order)
+        y = apply_filter(y, self.sampling_info, cutoff_freq, type=self.filter_type, order=self.order)
         return y
 
 

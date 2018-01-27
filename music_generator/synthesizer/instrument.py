@@ -27,7 +27,7 @@ class Instrument(object):
 
         for note in positioned_notes:
             assert isinstance(note, PositionedNote)
-            y = self.generate_note(note.note, note.duration, self.velocity)
+            y = self.generate_note(note.note, note.duration, self.velocity * note.velocity)
 
             # Note, variable pcm is updated in max_at method
             mix_at(pcm, y, note.offset.samples(self.generator.sampling_info.sample_rate))
