@@ -6,10 +6,11 @@ import numpy as np
 
 
 class PositionedNote(object):
-    def __init__(self, note: Note, offset: Duration, duration: Duration):
+    def __init__(self, note: Note, offset: Duration, duration: Duration, velocity=1.0):
         self.note = note
         self.offset = offset
         self.duration = duration
+        self.velocity = velocity
 
     def __repr__(self):
         return '{} at {} for {}'.format(self.note, self.offset, self.duration)
@@ -63,20 +64,21 @@ class Measure(object):
         """
         return self.signature.get_num_quarter_notes() * self.tempo.quarter_note()
 
-    def add_note(self, note: Note, position: float, duration: float):
+    def add_note(self, note: Note, position: float, duration: float, velocity=1.0):
         """Add a note to a measure
 
         Args:
             note: notes to play
             position: position w.r.t. beats in the bar
             duration: duration w.r.t. beats in the bar (whole notes is 4 for 4/4)
+            velocity: relative velocity of the note
 
         Returns:
             Measure: self
         """
         position = Duration.from_num_beats(position, self.tempo)
         duration = Duration.from_num_beats(duration, self.tempo)
-        self.notes.append(PositionedNote(note, position, duration))
+        self.notes.append(PositionedNote(note, position, duration, velocity))
         return self
 
     def generate_notes(self, offset: Duration):
