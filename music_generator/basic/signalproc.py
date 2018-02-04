@@ -1,15 +1,17 @@
-from scipy import signal
+from scipy import signal, fftpack
+from functools import total_ordering
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
+@total_ordering
 class SamplingInfo(object):
     def __init__(self, sample_rate: int):
         self.sample_rate = sample_rate
 
     @property
-    def phase_step(self):
+    def delta_t(self):
         return 1. / self.sample_rate
 
     @property
@@ -19,11 +21,23 @@ class SamplingInfo(object):
     def generate_silence(self, seconds):
         return np.zeros(shape=int(seconds * self.sample_rate))
 
+    def __eq__(self, other):
+        return self.sample_rate == other.sample_rate
 
+    def __lt__(self, other):
+        return self.sample_rate < other.sample_rate
+
+
+# TODO: make this a reliable unit tested function that can handle all corner cases
 def mix_at(array, y, at=0):
-    assert len(y) + at <= len(array)
+    if len(y) + at >= len(array):
+        n_extra_samples = int(len(y) + at - len(array))
+        array = np.concatenate(
+            (array, np.zeros(shape=n_extra_samples)))
     at = int(at)
     array[at:(at+len(y))] += y
+
+    return array
 
 
 def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float, order=5, type='lowpass'):
@@ -43,5 +57,7 @@ def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float
     """
     normal_cutoff = cutoff_freq / sampling_info.nyquist
     # noinspection PyTupleAssignmentBalance
-    b, a = signal.butter(4, normal_cutoff, btype=type, analog=False, output='ba')
+    b, a = signal.butter(order, normal_cutoff, btype=type, analog=False, output='ba')
     return signal.filtfilt(b, a, data, padlen=150)
+
+

@@ -15,7 +15,7 @@ def parse_args():
     arg_parser.add_argument('--length',
                             metavar='<LENGTH>',
                             dest='length',
-                            default=120,
+                            default=10,
                             type=float,
                             help='length in seconds')
 
@@ -48,10 +48,10 @@ def main(length, note_duration):
     y = monophonic_scale(n_notes,
                          note_duration,
                          0.1,
-                         GenericScale('C', [0, 2, 4, 5, 7, 9, 11]),
-                         osc=AliasingSquareOscillator(sampling_info))
+                         GenericScale('D', [0, 1, 4, 5, 7, 8, 10]),
+                         sampling_info=sampling_info)
 
-    play_array(y)
+    play_array(y, sampling_info.sample_rate)
 
     return 0
 
