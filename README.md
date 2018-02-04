@@ -6,11 +6,11 @@ A python library for generating random music to be used as training set for inst
 >
 > Isaac Newton
 
-
-I am making this music generator in addition to training data from a huge data set of recorded music for the following reasons:
+The benefits of using a music generator as training set over recorded music are:
 
 - We can control the complexity of our problem (how many instruments, what type of instruments, type of rhythms, polyphone vs. monophone, etc.). 
-- Since we are generating the data, the data set is infinite.
+- We always know the ground truth.
+- Since we are generating the data, the data set is basically infinite.
 
 
 ## Contents
