@@ -61,6 +61,15 @@ $ py.test tests
 
 If you get matplotlib errors google for the solution (should be easy).
 
+For installing simpleaudio you might need to install the python3-dev package.
+
+On ubuntu I also had to install:
+```bash
+sudo apt-get install libasound2-dev
+sudo apt-get install python3-tk
+
+```
+
 Generate music:
 
 ```
