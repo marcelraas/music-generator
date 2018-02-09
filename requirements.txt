@@ -6,3 +6,5 @@ jupyter
 scipy
 pytest
 simpleaudio
+tensorflow
+keras
