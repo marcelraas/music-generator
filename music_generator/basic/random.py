@@ -12,6 +12,7 @@ from music_generator.synthesizer.oscillators import AdditiveOscillator
 from music_generator.synthesizer.oscillators import AliasingSquareOscillator
 from music_generator.synthesizer.oscillators import FilteredOscillator
 from music_generator.synthesizer.oscillators import LinearAdsrGenerator
+from music_generator.synthesizer.oscillators import SquareOscillator
 from music_generator.musical.chords import MajorChordDefinition, MinorChordDefinition, ChordInScaleDefinition
 from music_generator.basic.utils import bounded_random_walk_mirror, elastic_bounded_random_walk
 
@@ -19,35 +20,38 @@ from music_generator.musical.score import Track, Measure
 
 
 def make_bass_instrument(sampling_info):
-    osc = AliasingSquareOscillator(sampling_info)
+    osc = SquareOscillator(sampling_info)
     base_gen = LinearAdsrGenerator(0.1e-3, 2, 0.01, 0.01, osc)
     generator = FilteredOscillator(sampling_info,
-                                   500,
+                                   1000,
                                    filter_type="lowpass",
                                    base_generator=base_gen,
                                    order=1)
-    return Instrument(generator)
+    bass_instrument = Instrument(generator)
+    bass_instrument.velocity = 0.1
+    return bass_instrument
 
 
 def make_lead_instrument(sampling_info):
-    osc = AliasingSquareOscillator(sampling_info)
+    osc = SquareOscillator(sampling_info)
     lead_base_gen = LinearAdsrGenerator(1e-3, 100e-3, 0.3, 0.1, osc)
     lead_generator = FilteredOscillator(sampling_info,
-                                        3000,
+                                        15000,
                                         filter_type="lowpass",
                                         base_generator=lead_base_gen,
-                                        order=5)
+                                        order=1)
     lead_generator.couple_velocity = 0.5
     lead_instrument = Instrument(lead_generator)
+    lead_instrument.velocity = 0.05
     return lead_instrument
 
 
 def make_accomp_instrument(sampling_info):
-    osc = AliasingSquareOscillator(sampling_info)
+    osc = SquareOscillator(sampling_info)
     chord_base_gen = LinearAdsrGenerator(200e-3, 0.1e-6, 1.0, 500e-3, osc)
-    chord_generator = FilteredOscillator(sampling_info, 1000, "lowpass", chord_base_gen, order=2)
+    chord_generator = FilteredOscillator(sampling_info, 800, "lowpass", chord_base_gen, order=1)
     chord_instrument = Instrument(chord_generator)
-    chord_instrument.velocity = 0.1
+    chord_instrument.velocity = 0.05
     return chord_instrument
 
 
@@ -65,10 +69,10 @@ def generate_bass_track(scale, tempo, signature, n_measures):
 
         measure = Measure(tempo, signature)
         measure.add_note(note, 0, 0.5)
-        measure.add_note(note, 1, 0.5)
+        measure.add_note(note, 1.0, 0.5)
         measure.add_note(note, 2.0, 0.125)
         measure.add_note(note, 2.5, 0.5)
-        measure.add_note(note, 3.375, 0.625)
+        measure.add_note(note, 3.5, 0.25)
 
         track.measures.append(measure)
         i += 1
@@ -112,25 +116,27 @@ def generate_lead_track(scale, tempo, signature, n_measures, n_notes_per_measure
     rw = elastic_bounded_random_walk(steps, np.random.randint(0, len(notes)), 0, len(notes))
     notes = notes[rw.astype(int)]
 
+    cisd = ChordInScaleDefinition(scale)
+
     # TODO: use proper measures for, instead of one big measure with all notes
     measure = Measure(tempo, signature)
     for index, note in enumerate(notes):
-        vel = 2 if (index % 8) in [0, 2, 5] else 1.2
-        measure.add_note(note, index * 1 / n_mul, 1 / n_mul, vel)
+        vel = 2 if (index % 8) in [0, 3, 5] else 1.2
+        cnotes = cisd.generate_chord(note)
+        cnotes.notes[1].increment(-12)
+        for n in cnotes.notes[0:2]:
+            measure.add_note(n, index * 1 / n_mul, 1 / n_mul, vel)
     track = Track([measure])
 
     return track
 
 
-def monophonic_scale(n_notes,
-                     note_duration,
-                     amp,
-                     scale: GenericScale,
-                     sampling_info):
+def monophonic_scale(n_measures,
+                     tempo=Tempo(120),
+                     scale=GenericScale('C', [0, 2, 3, 5, 7, 8, 10]),
+                     sampling_info=SamplingInfo(44100)):
     """Reimplementation of monophonic_random, using oscillator class"""
 
-    n_measures = 128
-    tempo = Tempo(110)
     signature = Signature(4, 4)
     n_notes_per_measure = 4
 
@@ -149,6 +155,10 @@ def monophonic_scale(n_notes,
 
     y = mix_at(y_chord, y_lead, at=0)
     y = mix_at(y, y_bass, at=0)
+
+    # Normalize amp
+    y = y - np.mean(y)
+    y /= 1.25*(np.percentile(y, 95) - np.percentile(y, 5))
 
     return y
 

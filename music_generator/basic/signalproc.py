@@ -18,6 +18,9 @@ class SamplingInfo(object):
     def nyquist(self):
         return self.sample_rate / 2
 
+    def get_period(self, frequency):
+        return self.sample_rate / frequency
+
     def generate_silence(self, seconds):
         return np.zeros(shape=int(seconds * self.sample_rate))
 
@@ -60,4 +63,64 @@ def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float
     b, a = signal.butter(order, normal_cutoff, btype=type, analog=False, output='ba')
     return signal.filtfilt(b, a, data, padlen=150)
 
+
+def digital_sinc(x, m):
+    """Digital sinc function
+
+    See https://www.music.mcgill.ca/~gary/307/week5/bandlimited.html for more details.
+
+    Args:
+        x (np.array[float]): input x-values to evaluate
+        m (int): number of harmonics
+
+    Returns:
+        np.array[float]
+    """
+    denom = m * np.sin(np.pi * x / m)
+
+    normal_term = np.sin(np.pi * x) / denom
+    hopital_term = np.cos(np.pi*x) / np.cos(np.pi*x/m)
+
+    y = np.where(abs(denom) > 1e-6, normal_term, hopital_term)
+
+    # # TODO: in case of numerical issue, limit is always 1, solve better way
+    y[np.isnan(y)] = 1
+    return y
+
+
+def blit(sampling_info: SamplingInfo, phase_vec, frequency, phase_shift, num_harm=-1):
+    """Generate a bandwidth limited impulse train (BLIT)
+
+    Args:
+        sampling_info (SamplingInfo): sampling information
+        phase_vec (np.array[float]): phase vector in radians
+        frequency (float): frequency
+        phase_shift (float): phase shift in radians
+        num_harm (int): number of harmonics
+            when -1, the number of harmonics is such that the frequency of the highest harmonic is below the Nyquist
+            frequency.
+
+    Returns:
+        np.array[float]
+    """
+    period = sampling_info.get_period(frequency)
+    ph_shift_samples = int(phase_shift / 2 / np.pi * period)
+
+    n = np.arange(0., len(phase_vec), 1.)
+    n += ph_shift_samples
+
+    # Determine number of harmonics based on Nyquist
+    if num_harm == -1:
+        num_harm = int(sampling_info.nyquist / frequency)
+        num_harm = num_harm - (1 if (num_harm % 2 == 0) else 0)
+
+    return num_harm / period * digital_sinc(n * num_harm / period, num_harm)
+
+
+def bl_square(sampling_info: SamplingInfo, phase_vec, frequency, phase_shift, num_harm=-1):
+
+    pos = blit(sampling_info, phase_vec, frequency, phase_shift, num_harm)
+    neg = blit(sampling_info, phase_vec, frequency, phase_shift + np.pi, num_harm)
+
+    return np.cumsum(pos - neg) * 4 - 2
 

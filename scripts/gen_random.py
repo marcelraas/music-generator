@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 
 from music_generator.analysis.play import play_array
 from music_generator.basic.random import monophonic_scale
+from music_generator.musical.timing import Tempo
 from music_generator.synthesizer.oscillators import AliasingSquareOscillator
 from music_generator.musical.scales import GenericScale
 from music_generator.basic.signalproc import SamplingInfo, apply_filter
@@ -42,13 +43,9 @@ def main(length, note_duration):
 
     sampling_info = SamplingInfo(88200)
 
-    n_notes = int(length / note_duration) + 1
-    n_notes = int(n_notes / 16) * 16
-
-    y = monophonic_scale(n_notes,
-                         note_duration,
-                         0.1,
-                         GenericScale('D', [0, 1, 4, 5, 7, 8, 10]),
+    y = monophonic_scale(n_measures=16,
+                         tempo=Tempo(120),
+                         scale=GenericScale('E', [0, 2, 3, 5, 7, 8, 10]),
                          sampling_info=sampling_info)
 
     play_array(y, sampling_info.sample_rate)
