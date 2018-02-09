@@ -8,3 +8,4 @@ pytest
 simpleaudio
 tensorflow
 keras
+nbstripout
