@@ -1,6 +1,8 @@
-from music_generator.basic.signalproc import SamplingInfo, apply_filter
-
+from scipy.interpolate import interp1d
 import numpy as np
+from copy import copy
+
+from music_generator.basic.signalproc import SamplingInfo, apply_filter, bl_square
 
 
 class Generator(object):
@@ -101,6 +103,46 @@ class AliasingSquareOscillator(Generator):
 
         phase_vec = self.get_phase_vector(duration, frequency, phase, update_phase=True)
         return amplitude * np.sign(np.sin(phase_vec))
+
+
+class WaveTable(object):
+
+    def __init__(self, samples):
+        self._x = np.arange(0, 2 * np.pi, 2 * np.pi / len(samples))
+        self._y = copy(samples)
+        self._interp_func = interp1d(self._x, self._y)
+
+    def get_samples(self):
+        return self._y
+
+    @classmethod
+    def from_func(cls, n_samples, func):
+        x = np.arange(0, 2 * np.pi, 2 * np.pi / n_samples)
+        y = func(x)
+        return cls(y)
+
+    def eval(self, phase_vec):
+        phase_vec = phase_vec % 2*np.pi
+        return self._interp_func(phase_vec)
+
+
+class WaveTableOscillator(Generator):
+    def __init__(self, sampling_info: SamplingInfo, wave_table: WaveTable):
+        Generator.__init__(self, sampling_info)
+        self.wave_table = wave_table
+
+    def generate(self, amplitude, duration, frequency, phase):
+        phase_vec = self.get_phase_vector(duration, frequency, phase, update_phase=True)
+        return amplitude * self.wave_table.eval(phase_vec)
+
+
+class SquareOscillator(Generator):
+    def __init__(self, sampling_info: SamplingInfo):
+        Generator.__init__(self, sampling_info)
+
+    def generate(self, amplitude, duration, frequency, phase):
+        phase_vec = self.get_phase_vector(duration, frequency, phase, update_phase=True)
+        return amplitude * bl_square(self.sampling_info, phase_vec, frequency, 0, -1)
 
 
 class FilteredOscillator(Generator):

@@ -1,6 +1,8 @@
 from music_generator.synthesizer.oscillators import AdditiveOscillator
 from music_generator.synthesizer.oscillators import LinearAdsrGenerator
 from music_generator.synthesizer.oscillators import AliasingSquareOscillator
+from music_generator.synthesizer.oscillators import WaveTable
+from music_generator.synthesizer.oscillators import WaveTableOscillator
 from music_generator.basic.signalproc import SamplingInfo
 
 import music_generator.synthesizer.oscillators as oscillators
@@ -47,5 +49,14 @@ def test_adsr_generation(sampling_info):
     # play_array(y)
     # plt.plot(y)
     # plt.show()
+
+
+def test_wave_table_from_func(sampling_info):
+    wt = WaveTable.from_func(4096, np.sinc)
+    phase_vec = np.arange(0, 8*np.pi, 8*np.pi/501)
+    plt.plot(phase_vec, wt.eval(phase_vec))
+    plt.show()
+
+    pass
 
 
