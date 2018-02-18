@@ -67,8 +67,9 @@ On ubuntu I also had to install:
 ```bash
 sudo apt-get install libasound2-dev
 sudo apt-get install python3-tk
-
 ```
+
+You might need to install ffmpeg.
 
 Generate music:
 

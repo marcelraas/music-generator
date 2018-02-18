@@ -1,4 +1,7 @@
 import numpy as np
+from scipy.fftpack import rfft, irfft
+
+from music_generator.basic.utils import parallel_apply_along_axis
 
 from music_generator.basic.signalproc import mix_at
 
@@ -25,21 +28,50 @@ def create_training_data_set(n_samples, fragment_length, input_track, target_tra
     return x, y
 
 
+def apply_fourier_on_dataset(dataset: np.array):
+    return np.apply_along_axis(rfft, 0, dataset)
+
+
 def x_fade_profile(batch_dim):
     x = np.arange(batch_dim)
     return 1 - abs(x - (batch_dim / 2)) / (batch_dim / 2)
 
 
-def model_predict(model, input_track, sample_size):
+def decoder_predict(decoder_model, encoded_x, trans_bw):
+    return parallel_apply_along_axis(trans_bw, 0, decoder_model.predict(encoded_x)).reshape(-1)
+
+
+def apply_fourier_on_input(input_track, window_size):
+    n_batches = int(len(input_track) / window_size)
+    batches = input_track[0:n_batches*window_size].reshape((-1, window_size))
+    return parallel_apply_along_axis(rfft, 0, batches)
+
+
+def model_predict(model, input_track, sample_size, trans_fw=None, trans_bw=None):
     dim = sample_size
     n_batches = int(len(input_track) / dim) - 1
-    pred_batches = input_track[0:n_batches * dim].reshape((-1, dim))
 
+    pred_batches = input_track[0:n_batches * dim].reshape((-1, dim))
     pred_batches_shifted = input_track[dim // 2:n_batches * dim + dim // 2].reshape((-1, dim))
+
+    print("FFT transforming...")
+
+    if trans_fw is not None:
+        pred_batches, pred_batches_shifted = map(lambda x: parallel_apply_along_axis(trans_fw, 0, x),
+                                                 (pred_batches, pred_batches_shifted))
+
+    if trans_bw is None:
+        trans_bw = lambda x: x
 
     xfp = x_fade_profile(dim)
 
-    x0 = np.array([xfp * batch for batch in model.predict(pred_batches)]).reshape(-1)
-    x1 = np.array([xfp * batch for batch in model.predict(pred_batches_shifted)]).reshape(-1)
+    print("Predicting and transforming...")
+
+    pred_batches, pred_batches_shifted = map(lambda x: parallel_apply_along_axis(trans_bw, 0, model.predict(x)),
+                                             (pred_batches, pred_batches_shifted))
+
+    print("Applying x-fade and mixing...")
+    x0 = np.array([xfp * batch for batch in pred_batches]).reshape(-1)
+    x1 = np.array([xfp * batch for batch in pred_batches_shifted]).reshape(-1)
 
     return mix_at(x0, x1, dim // 2)

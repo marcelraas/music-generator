@@ -9,3 +9,5 @@ simpleaudio
 tensorflow
 keras
 nbstripout
+PyQt5
+h5py
