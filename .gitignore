@@ -1,4 +1,6 @@
 *.pyc
 *.idea
 *.cache
+*.pytest_cache/*
+*.ipynb_checkpoints
 

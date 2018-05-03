@@ -75,3 +75,11 @@ def unpacking_apply_along_axis(args_as_tuple):
     func1d, axis, arr, args, kwargs = args_as_tuple
 
     return np.apply_along_axis(func1d, axis, arr, *args, **kwargs)
+
+
+def match_dims_by_clipping_tail(a, b):
+    last_index = min(len(a), len(b))
+    return a[:last_index], b[:last_index]
+
+
+

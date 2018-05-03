@@ -5,5 +5,5 @@ BASEDIR=${DIR}/../
 
 source ${BASEDIR}/venv/bin/activate &&
 export PYTHONPATH=${BASEDIR} &&
-jupyter notebook .
+jupyter notebook ${BASEDIR}
 

@@ -124,3 +124,5 @@ def bl_square(sampling_info: SamplingInfo, phase_vec, frequency, phase_shift, nu
 
     return np.cumsum(pos - neg) * 4 - 2
 
+
+
