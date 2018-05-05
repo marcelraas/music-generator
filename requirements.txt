@@ -9,6 +9,8 @@ simpleaudio
 tensorflow
 keras
 nbstripout
-PyQt5
 h5py
 plotly
+torch
+torchvision
+progressbar2
