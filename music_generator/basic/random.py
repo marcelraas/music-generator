@@ -109,7 +109,7 @@ def generate_lead_track(scale, tempo, signature, n_measures, n_notes_per_measure
     p = p / np.sum(p)
     steps = np.random.choice([-4, -3, -2, -1, 0, 1, 2, 3, 4],
                              n_notes - 1, p=p)
-    notes = np.array(scale.generate(5, 6))
+    notes = np.array(scale.generate(4, 6))
     rw = elastic_bounded_random_walk(steps, np.random.randint(0, len(notes)), 0, len(notes))
     notes = notes[rw.astype(int)]
 
