@@ -3,11 +3,10 @@ import sys
 from argparse import ArgumentParser
 
 from music_generator.analysis.play import play_array
-from music_generator.basic.random import monophonic_scale
+from music_generator.basic.random import generate_dataset
 from music_generator.musical.timing import Tempo
-from music_generator.synthesizer.oscillators import AliasingSquareOscillator
 from music_generator.musical.scales import GenericScale
-from music_generator.basic.signalproc import SamplingInfo, apply_filter
+from music_generator.basic.signalproc import SamplingInfo
 
 
 def parse_args():
@@ -43,12 +42,12 @@ def main(length, note_duration):
 
     sampling_info = SamplingInfo(88200)
 
-    y = monophonic_scale(n_measures=16,
-                         tempo=Tempo(120),
-                         scale=GenericScale('E', [0, 2, 3, 5, 7, 8, 10]),
-                         sampling_info=sampling_info)
+    score_tracks, audio_tracks, mix = generate_dataset(n_measures=16,
+                                                       tempo=Tempo(100),
+                                                       scale=GenericScale('E', [0, 2, 3, 5, 7, 8, 10]),
+                                                       sampling_info=sampling_info)
 
-    play_array(y, sampling_info.sample_rate)
+    play_array(mix, sampling_info.sample_rate)
 
     return 0
 

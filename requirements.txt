@@ -6,3 +6,11 @@ jupyter
 scipy
 pytest
 simpleaudio
+tensorflow
+keras
+nbstripout
+h5py
+plotly
+torch
+torchvision
+progressbar2

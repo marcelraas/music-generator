@@ -10,12 +10,14 @@ Conventions:
 """
 
 from copy import deepcopy
+from functools import total_ordering
 
 BASE_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 _A4_BASE = 57
 _A4_TUNING = 440
 
 
+@total_ordering
 class Note(object):
     def __init__(self, symbol: str, octave: int):
         self.semi_from_c0 = self.calc_semi_from_c0(symbol, octave)
@@ -62,6 +64,30 @@ class Note(object):
         """
         return deepcopy(self)
 
+    def __lt__(self, other):
+        """Less than comparison
+
+        Args:
+            other (Note)
+
+        Returns:
+            bool
+        """
+        return self.get_semi_from_a4() < other.get_semi_from_a4()
+
+    def __eq__(self, other):
+        """Equality comparison
+
+        Args:
+            other (Note)
+
+        Returns:
+            bool
+        """
+        return self.get_semi_from_a4() == other.get_semi_from_a4()
+
+    def __hash__(self):
+        return str(self).__hash__()
 
 
 

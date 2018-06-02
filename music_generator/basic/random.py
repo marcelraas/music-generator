@@ -1,20 +1,17 @@
 import numpy as np
+from copy import copy
 
 from music_generator.musical.timing import Signature, Tempo
 
-from music_generator.basic.signalproc import SamplingInfo, apply_filter, mix_at
-from music_generator.musical.notes import Note
+from music_generator.basic.signalproc import SamplingInfo, mix_at
 from music_generator.musical.scales import GenericScale
 from music_generator.synthesizer.instrument import Instrument
 
-from music_generator.synthesizer.oscillators import SineOscillator
-from music_generator.synthesizer.oscillators import AdditiveOscillator
-from music_generator.synthesizer.oscillators import AliasingSquareOscillator
 from music_generator.synthesizer.oscillators import FilteredOscillator
 from music_generator.synthesizer.oscillators import LinearAdsrGenerator
 from music_generator.synthesizer.oscillators import SquareOscillator
-from music_generator.musical.chords import MajorChordDefinition, MinorChordDefinition, ChordInScaleDefinition
-from music_generator.basic.utils import bounded_random_walk_mirror, elastic_bounded_random_walk
+from music_generator.musical.chords import ChordInScaleDefinition
+from music_generator.basic.utils import elastic_bounded_random_walk
 
 from music_generator.musical.score import Track, Measure
 
@@ -112,30 +109,29 @@ def generate_lead_track(scale, tempo, signature, n_measures, n_notes_per_measure
     p = p / np.sum(p)
     steps = np.random.choice([-4, -3, -2, -1, 0, 1, 2, 3, 4],
                              n_notes - 1, p=p)
-    notes = np.array(scale.generate(5, 6))
+    notes = np.array(scale.generate(4, 6))
     rw = elastic_bounded_random_walk(steps, np.random.randint(0, len(notes)), 0, len(notes))
     notes = notes[rw.astype(int)]
 
     cisd = ChordInScaleDefinition(scale)
 
-    # TODO: use proper measures for, instead of one big measure with all notes
+    # TODO: use proper measures, instead of one big measure with all notes
     measure = Measure(tempo, signature)
     for index, note in enumerate(notes):
         vel = 2 if (index % 8) in [0, 3, 5] else 1.2
         cnotes = cisd.generate_chord(note)
-        cnotes.notes[1].increment(-12)
-        for n in cnotes.notes[0:2]:
+        cnotes.notes[1].increment(0)
+        for n in cnotes.notes[0:1]:
             measure.add_note(n, index * 1 / n_mul, 1 / n_mul, vel)
     track = Track([measure])
 
     return track
 
 
-def monophonic_scale(n_measures,
+def generate_dataset(n_measures,
                      tempo=Tempo(120),
                      scale=GenericScale('C', [0, 2, 3, 5, 7, 8, 10]),
                      sampling_info=SamplingInfo(44100)):
-    """Reimplementation of monophonic_random, using oscillator class"""
 
     signature = Signature(4, 4)
     n_notes_per_measure = 4
@@ -153,13 +149,21 @@ def monophonic_scale(n_measures,
     bass_track = generate_bass_track(scale, tempo, signature, n_measures)
     y_bass = bass_instrument.generate_track(bass_track)
 
-    y = mix_at(y_chord, y_lead, at=0)
-    y = mix_at(y, y_bass, at=0)
+    mix = mixdown([y_bass, y_chord, y_lead])
+
+    return [bass_track, chord_track, lead_track], [y_bass, y_chord, y_lead], mix
+
+
+def mixdown(audio_tracks):
+
+    y = copy(audio_tracks[0])
+
+    for t in audio_tracks[1:]:
+        y = mix_at(y, t, at=0)
 
     # Normalize amp
     y = y - np.mean(y)
     y /= 1.25*(np.percentile(y, 95) - np.percentile(y, 5))
 
     return y
-
 
