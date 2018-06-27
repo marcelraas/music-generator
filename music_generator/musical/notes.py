@@ -43,6 +43,10 @@ class Note(object):
         """Calculate frequency of notes"""
         return (2 ** (self.get_semi_from_a4()/12.)) * _A4_TUNING
 
+    def set_octave(self, octave: int):
+        """Sets the octave"""
+        self.__init__(self.get_symbol(), octave)
+
     @staticmethod
     def calc_semi_from_c0(symbol: str, octave: int):
         """Calculate semitones from c0

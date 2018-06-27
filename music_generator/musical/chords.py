@@ -65,9 +65,13 @@ class ChordInScaleDefinition(object):
 class Chord(object):
     def __init__(self, notes):
         self.notes = notes
+        self.root = notes[0]
 
     def __repr__(self):
         return str(self.notes)
+
+    def get_root(self):
+        return self.root
 
     def get_symbols(self):
         return [x.get_symbol() for x in self.notes]

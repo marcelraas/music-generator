@@ -37,3 +37,35 @@ def generate_chords(scale: GenericScale, num_measures=8, repeat=4, pattern=4):
                 chords.append(chord)
                 if len(chords) == num_measures:
                     return chords
+
+
+def generate_bass(chords, signature: Signature, tempo: Tempo):
+
+    measures = []
+    for c in chords:
+        measure = Measure(tempo, signature)
+        note = c.get_root().clone()
+        note.set_octave(1)
+
+        for i in range(int(signature.get_num_quarter_notes())):
+            measure.add_note(note, i, 0.5)
+        measures.append(measure)
+
+    track = Track(measures)
+
+    return track
+
+
+def generate(num_measures=64):
+
+    tempo = Tempo(120)
+    signature = Signature(4, 4)
+
+    scale = GenericScale('C', [0, 2, 3, 5, 7, 8, 10])
+    chords = generate_chords(scale, num_measures)
+
+    trk_bass = generate_bass(chords, signature, tempo)
+
+    return trk_bass
+
+    pass

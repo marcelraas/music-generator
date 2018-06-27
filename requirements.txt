@@ -14,3 +14,4 @@ plotly
 torch
 torchvision
 progressbar2
+music21
