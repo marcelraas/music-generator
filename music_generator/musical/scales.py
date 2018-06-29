@@ -22,3 +22,17 @@ class GenericScale(object):
 
     def get_symbols(self):
         return [x.get_symbol() for x in self.generate(0, 1)]
+
+
+def major_scale(root):
+    return GenericScale(root, [0, 2, 4, 5, 7, 9, 11])
+
+
+def minor_scale(root):
+    return GenericScale(root, [0, 2, 3, 5, 7, 8, 10])
+
+
+def chromatic_scale(root):
+    return GenericScale(root, range(0, 12))
+
+

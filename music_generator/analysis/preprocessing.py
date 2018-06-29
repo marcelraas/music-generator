@@ -67,12 +67,17 @@ def batches_to_array(batches, step):
     return result
 
 
+def clip_to_same_length(arrays):
+    min_size = np.min([len(arr) for arr in arrays])
+    return np.array([arr[0:min_size] for arr in arrays])
 
 
-def combine_datasets(ds1, ds2):
-    print("WARNING: not combining the score tracks")
-    audio_tracks = [np.concatenate((x1, x2)) for x1, x2 in zip(ds1[1], ds2[1])]
-    mix = np.concatenate((ds1[2], ds2[2]))
+def combine_datasets(list_of_datasets):
+    tuple_of_audio_tracks = tuple(clip_to_same_length(el[1]) for el in list_of_datasets)
+    max_lens = [at.shape[1] for at in tuple_of_audio_tracks]
+    tuple_of_mixes = tuple(np.array(el[2][0:ml]) for el, ml in zip(list_of_datasets, max_lens))
+    audio_tracks = np.concatenate(tuple_of_audio_tracks, axis=1)
+    mix = np.concatenate(tuple_of_mixes)
 
     return audio_tracks, mix
 

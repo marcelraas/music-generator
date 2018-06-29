@@ -92,8 +92,14 @@ class Measure(object):
         """
         return [note.clone().add_offset(offset) for note in self.notes]
 
+    def str_summary(self):
+        result = f'{self.signature}: (@{self.tempo}):'
+        for n in self.notes:
+            result += f'\n{n}'
+        return result
+
     def __repr__(self):
-        return "{} at {}".format(str(self.signature), self.tempo)
+        return "{} at {} with {} notes".format(str(self.signature), self.tempo, len(self.notes))
 
 
 class Track(object):
