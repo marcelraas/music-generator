@@ -78,10 +78,11 @@ def digital_sinc(x, m):
     """
     denom = m * np.sin(np.pi * x / m)
 
-    normal_term = np.sin(np.pi * x) / denom
-    hopital_term = np.cos(np.pi*x) / np.cos(np.pi*x/m)
+    use_normal_term = np.abs(denom) > 1e-12
+    normal_term = np.divide(np.sin(np.pi * x), denom, where=use_normal_term)
+    hopital_term = np.divide(np.cos(np.pi*x), np.cos(np.pi*x/m), where=~use_normal_term)
 
-    y = np.where(abs(denom) > 1e-6, normal_term, hopital_term)
+    y = np.where(use_normal_term, normal_term, hopital_term)
 
     # # TODO: in case of numerical issue, limit is always 1, solve better way
     y[np.isnan(y)] = 1
