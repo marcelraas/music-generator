@@ -58,7 +58,7 @@ def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float
     Returns:
 
     """
-    normal_cutoff = cutoff_freq / sampling_info.nyquist
+    normal_cutoff = np.array(cutoff_freq) / sampling_info.nyquist
     # noinspection PyTupleAssignmentBalance
     b, a = signal.butter(order, normal_cutoff, btype=type, analog=False, output='ba')
     return signal.filtfilt(b, a, data, padlen=150)
