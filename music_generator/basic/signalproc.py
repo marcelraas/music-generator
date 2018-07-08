@@ -43,7 +43,7 @@ def mix_at(array, y, at=0):
     return array
 
 
-def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float, order=5, type='lowpass'):
+def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float, order=5, ftype='lowpass'):
     """Apply filter
 
     Applies a Butterworth filter to the data.
@@ -53,14 +53,20 @@ def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float
         sampling_info (SamplingInfo): sampling info instance
         cutoff_freq (float): cut-off frequency in Hertz
         order (int): order of the Butterworth filter
-        type (str): lowpass, highpass, bandpass or bandstop
+        ftype (str): lowpass, highpass, bandpass or bandstop
 
     Returns:
 
     """
-    normal_cutoff = np.array(cutoff_freq) / sampling_info.nyquist
+    if type(cutoff_freq) == float:
+        normal_cutoff = cutoff_freq / sampling_info.nyquist
+        if normal_cutoff > 1:
+            normal_cutoff = 1
+    else:
+        normal_cutoff = np.array(cutoff_freq) / sampling_info.nyquist
+
     # noinspection PyTupleAssignmentBalance
-    b, a = signal.butter(order, normal_cutoff, btype=type, analog=False, output='ba')
+    b, a = signal.butter(order, normal_cutoff, btype=ftype, analog=False, output='ba')
     return signal.filtfilt(b, a, data, padlen=150)
 
 
