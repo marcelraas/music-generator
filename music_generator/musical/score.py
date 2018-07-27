@@ -102,8 +102,10 @@ class Measure(object):
         return "{} at {} with {} notes".format(str(self.signature), self.tempo, len(self.notes))
 
 
+from typing import Iterable
+
 class Track(object):
-    def __init__(self, measures):
+    def __init__(self, measures: Iterable[Measure]):
         self.measures = measures
 
     def generate_notes(self):

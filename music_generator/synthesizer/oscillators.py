@@ -168,7 +168,7 @@ class FilteredOscillator(Generator):
             else self.cutoff_freq * amplitude / self.couple_velocity
 
         y = self.base_generator.generate(amplitude, duration, frequency, phase)
-        y = apply_filter(y, self.sampling_info, cutoff_freq, type=self.filter_type, order=self.order)
+        y = apply_filter(y, self.sampling_info, cutoff_freq, ftype=self.filter_type, order=self.order)
         return y
 
 
