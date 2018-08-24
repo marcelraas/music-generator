@@ -3,6 +3,7 @@ from music_generator.musical.timing import Signature, Tempo, Duration
 
 from copy import deepcopy
 import numpy as np
+from typing import Iterable
 
 
 class PositionedNote(object):
@@ -101,8 +102,6 @@ class Measure(object):
     def __repr__(self):
         return "{} at {} with {} notes".format(str(self.signature), self.tempo, len(self.notes))
 
-
-from typing import Iterable
 
 class Track(object):
     def __init__(self, measures: Iterable[Measure]):
