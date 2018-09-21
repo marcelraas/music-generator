@@ -58,8 +58,8 @@ def create_data_set_guitar():
 
     from scipy.io.wavfile import read
 
-    sr, full_mix = read("data/full-mix.wav", mmap=False)
-    sr, only_guitar = read("data/only-guitar.wav", mmap=False)
+    sr, full_mix = read("../data/full-mix.wav", mmap=False)
+    sr, only_guitar = read("../data/only-guitar.wav", mmap=False)
 
     return full_mix / 2**16, only_guitar / 2**16
 
