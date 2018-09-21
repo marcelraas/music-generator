@@ -32,7 +32,7 @@ class SamplingInfo(object):
 
 
 # TODO: make this a reliable unit tested function that can handle all corner cases
-def mix_at(array, y, at=0):
+def mix_at(array, y, at: int=0):
     if len(y) + at >= len(array):
         n_extra_samples = int(len(y) + at - len(array))
         array = np.concatenate(
@@ -67,6 +67,8 @@ def apply_filter(data: np.array, sampling_info: SamplingInfo, cutoff_freq: float
 
     # noinspection PyTupleAssignmentBalance
     b, a = signal.butter(order, normal_cutoff, btype=ftype, analog=False, output='ba')
+
+    # TODO: causes FutureWarning: Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of `arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result either in an error or a different result. b = a[a_slice]
     return signal.filtfilt(b, a, data, padlen=150)
 
 

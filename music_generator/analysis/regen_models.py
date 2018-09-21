@@ -1,6 +1,8 @@
 
 import tensorflow as tf
 import keras
+from music_generator.basic import signalproc
+import numpy as np
 from keras.layers import Dense, Lambda, PReLU, Input
 
 
@@ -123,3 +125,29 @@ class FftBranches(object):
         return model
 
 
+class RegenModel(object):
+
+    def __init__(self, model, fragment_length):
+
+        self.model = model
+        self.fragment_length = fragment_length
+
+    @staticmethod
+    def x_fade_profile(batch_dim):
+        x = np.arange(batch_dim)
+        return 1 - abs(x - (batch_dim / 2)) / (batch_dim / 2)
+
+    def predict(self, input_track):
+
+        dim = self.fragment_length
+        n_batches = int(len(input_track) / dim) - 1
+        pred_batches = input_track[0:n_batches * dim].reshape((-1, dim))
+
+        pred_batches_shifted = input_track[dim // 2:n_batches * dim + dim // 2].reshape((-1, dim))
+
+        xfp = self.x_fade_profile(dim)
+
+        x0 = np.array([xfp * batch for batch in self.model.predict(pred_batches)]).reshape(-1)
+        x1 = np.array([xfp * batch for batch in self.model.predict(pred_batches_shifted)]).reshape(-1)
+
+        return signalproc.mix_at(x0, x1, dim // 2)
