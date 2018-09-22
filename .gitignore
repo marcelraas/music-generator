@@ -1,7 +1,7 @@
 *.pyc
 *.idea
 *.cache
-*.pytest_cache/*
+*/.pytest_cache/*
 *.ipynb_checkpoints
 nbdraft/
 data/
