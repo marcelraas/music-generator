@@ -5,4 +5,5 @@
 *.ipynb_checkpoints
 nbdraft/
 data/
-
+.pytest_cache/*
+venv/
