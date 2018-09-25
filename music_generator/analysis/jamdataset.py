@@ -47,8 +47,30 @@ class JamDataSet(object):
         self.data_dir = data_dir
 
         self._train_data = FullMixToFilterDataSet(
-            ['full-mix-jam3.wav', 'full-mix-jam6.wav', 'full-mix-jam7.wav'],
-            ['only-guitar-jam3.wav', 'only-guitar-jam6.wav', 'only-guitar-jam7.wav'],
+            ['full-mix-jam1-01.wav',
+             'full-mix-jam1-02.wav',
+             'full-mix-jam1-03.wav',
+             'full-mix-jam1-04.wav',
+             'full-mix-jam1-05.wav',
+             'full-mix-jam1-06.wav',
+             'full-mix-jam1-07.wav',
+             'full-mix-jam1-09.wav',
+             'full-mix-jam2.wav',
+             'full-mix-jam3.wav',
+             'full-mix-jam6.wav',
+             'full-mix-jam7.wav'],
+            ['only-guitar-jam1-01.wav',
+             'only-guitar-jam1-02.wav',
+             'only-guitar-jam1-03.wav',
+             'only-guitar-jam1-04.wav',
+             'only-guitar-jam1-05.wav',
+             'only-guitar-jam1-06.wav',
+             'only-guitar-jam1-07.wav',
+             'only-guitar-jam1-09.wav',
+             'only-guitar-jam2.wav',
+             'only-guitar-jam3.wav',
+             'only-guitar-jam6.wav',
+             'only-guitar-jam7.wav'],
             base_dir=data_dir)
 
         self._test_data = FullMixToFilterDataSet(
