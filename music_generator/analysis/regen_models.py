@@ -6,6 +6,18 @@ import numpy as np
 from keras.layers import Dense, Lambda, PReLU, Input, Dropout, Activation
 
 
+class GruRegenModel(object):
+
+    def __init__(self, batch_size_fft, n_batches):
+
+        self.batch_size_fft = batch_size_fft
+        self.n_batches = n_batches
+
+    def build_model(self):
+
+        inp = keras.models.Input(shape=(self.batch_size,))
+
+
 class RegenModelFft(object):
 
     def __init__(self, batch_size, learning_rate=1e-4):
