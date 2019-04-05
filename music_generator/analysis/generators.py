@@ -63,9 +63,6 @@ class WaveSequentialChopper(tf.keras.utils.Sequence):
         pass
 
 
-
-
-
 class AutoEncoderGenerator(tf.keras.utils.Sequence):
 
     def __init__(self, generator):
@@ -85,5 +82,61 @@ class AutoEncoderGenerator(tf.keras.utils.Sequence):
 
     def on_epoch_end(self):
         self.generator.on_epoch_end()
+
+
+class SongMatchingSampler(tf.keras.utils.Sequence):
+
+    def __init__(self, wave_data, num_batches_per_epoch, batch_size, excerpt_length):
+
+        super().__init__()
+
+        self.num_batches_per_epoch = num_batches_per_epoch
+        self.excerpt_length = excerpt_length
+        self.batch_size = batch_size
+        self.wave_data = wave_data
+
+        self.wave_data_length = self.wave_data.shape[1]
+
+        self.song_offsets = None
+        self.song_ids = None
+        self.is_same_song = None
+
+        self.on_epoch_end()
+
+    def __len__(self):
+
+        return self.num_batches_per_epoch
+
+    def __getitem__(self, item):
+
+        # First get full song data
+        x_full_song = self.wave_data[self.song_ids[item, :, :]]  # batch_idx, song a/b, sample_idx
+
+        # Now get the excerpt data
+        batch_song_offsets = self.song_offsets[item, :, :]  # batch_idx, song a/b
+        x_excerpts = np.empty(shape=[self.batch_size, 2, self.excerpt_length])
+
+        for batch_idx, offset in enumerate(batch_song_offsets):
+            x_excerpts[batch_idx, 0, :] = x_full_song[batch_idx, 0, offset[0]:offset[0] + self.excerpt_length]
+            x_excerpts[batch_idx, 1, :] = x_full_song[batch_idx, 1, offset[1]:offset[1] + self.excerpt_length]
+
+        targets = self.is_same_song[item, :]
+
+        return x_excerpts, targets
+
+    def on_epoch_end(self):
+
+        max_idx = self.wave_data_length - self.excerpt_length
+
+        self.song_offsets = np.random.randint(0, max_idx,
+                                              size=[self.num_batches_per_epoch, self.batch_size, 2])
+
+        self.song_ids = np.random.randint(0, len(self.wave_data),
+                                          size=[self.num_batches_per_epoch, self.batch_size, 2])
+
+        # Ignoring that occasional same song can be sampled
+        self.is_same_song = same_song_ids = np.random.uniform(0, 1, size=[self.num_batches_per_epoch, self.batch_size]) > 0.5
+        self.song_ids[:, :, 1] = same_song_ids * self.song_ids[:, :, 0] + (1 - same_song_ids) * self.song_ids[:, :, 1]
+
 
 
