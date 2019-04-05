@@ -6,16 +6,38 @@ import numpy as np
 from keras.layers import Dense, Lambda, PReLU, Input, Dropout, Activation
 
 
-class GruRegenModel(object):
+class RegenModelGru(object):
 
-    def __init__(self, batch_size_fft, n_batches):
+    def __init__(self, fft_size, num_timesteps):
 
-        self.batch_size_fft = batch_size_fft
-        self.n_batches = n_batches
+        self.fft_size = fft_size
+        self.num_timesteps = num_timesteps
 
     def build_model(self):
 
-        inp = keras.models.Input(shape=(self.batch_size,))
+        def reshape_input(inp):
+            return tf.reshape(inp, [self.fft_size, self.num_timesteps])
+
+        def reshape_to_output(layer):
+            return tf.reshape(layer, [self.fft_size * self.num_timesteps])
+
+        def apply_fft(x):
+            x_complex = tf.cast(x, dtype=tf.complex64)
+            x_fft = tf.fft(x_complex)
+
+            return tf.concat([tf.real(x_fft), tf.imag(x_fft)], axis=1)
+
+
+        inp = keras.layers.Input([self.fft_size*self.num_timesteps])
+
+
+
+        reshaped = keras.layers.Lambda(reshape_input)(inp)
+
+
+
+        output = keras.layers.Lambda(reshape_to_output)(reshaped)
+        return keras.models.Model(inp, output)
 
 
 class RegenModelFft(object):
@@ -138,8 +160,8 @@ class FftBranches(object):
         # Apply network logic on abs branch
         abs_branch = Dense(abs_branch.shape[1].value)(abs_branch)
         abs_branch = PReLU()(abs_branch)
-        # abs_branch = Dropout(0.01)(abs_branch)
-        abs_branch = Dense(abs_branch.shape[1].value, kernel_regularizer=keras.regularizers.l2(0.01))(abs_branch)
+        abs_branch = Dropout(0.01)(abs_branch)
+        abs_branch = Dense(abs_branch.shape[1].value)(abs_branch)
         abs_branch = PReLU()(abs_branch)
 
         out = keras.layers.Lambda(combine_and_inverse_fft, output_shape=[self.batch_size])([abs_branch, angle_branch])
@@ -216,7 +238,7 @@ class FftBranchesFilter(object):
         angle_branch = keras.layers.Lambda(create_angle_branch, output_shape=[self.batch_size])(out)
 
         # Compute filter
-        filter_branch = Lambda(lambda x: x / self.batch_size)(abs_branch)
+        filter_branch = Lambda(lambda x: x / self.batch_size)(angle_branch)
         filter_branch = Dense(abs_branch.shape[1].value)(filter_branch)
         filter_branch = PReLU()(filter_branch)
         # filter_branch = Dropout(0.01)(filter_branch)
