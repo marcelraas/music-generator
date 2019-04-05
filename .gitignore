@@ -7,3 +7,4 @@ nbdraft/
 data/
 .pytest_cache/*
 venv/
+*.DS_Store
