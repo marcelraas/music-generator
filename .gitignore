@@ -8,3 +8,4 @@ data/
 .pytest_cache/*
 venv/
 *.DS_Store
+music_generator.egg-info/
