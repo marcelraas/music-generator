@@ -1,9 +1,9 @@
 
 import tensorflow as tf
-import keras
+from tensorflow import keras
 from music_generator.basic import signalproc
 import numpy as np
-from keras.layers import Dense, Lambda, PReLU, Input, Dropout, Activation
+from tensorflow.keras.layers import Dense, Lambda, PReLU, Input, Dropout, Activation
 
 
 class RegenModelGru(object):

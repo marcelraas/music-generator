@@ -9,12 +9,14 @@ from setuptools import setup, find_packages
 #                 'tqdm==4.28.1']
 
 requirements = [
-    'tensorflow>=2.0.0',
+    'tensorflow',
     'numpy',
     'pandas',
     'matplotlib',
     'scikit-learn',
-    'scipy'
+    'scipy',
+    'pytest',
+    'simpleaudio'
 ]
 
 setup(
