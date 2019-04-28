@@ -53,15 +53,15 @@ class RegenModelFft(object):
             y_target_complex = tf.cast(y_target, dtype=tf.complex64)
             y_predicted_complex = tf.cast(y_predicted, dtype=tf.complex64)
 
-            loss = tf.square(tf.abs(tf.fft(y_target_complex)) -
-                             tf.abs(tf.fft(y_predicted_complex)))
+            loss = tf.square(tf.abs(tf.signal.fft(y_target_complex)) -
+                             tf.abs(tf.signal.fft(y_predicted_complex)))
             return loss
 
         def forward_fft(x):
             x_complex = tf.cast(x, dtype=tf.complex64)
-            x_fft = tf.fft(x_complex)
+            x_fft = tf.signal.fft(x_complex)
 
-            return tf.concat([tf.real(x_fft), tf.imag(x_fft)], axis=1)
+            return tf.concat([tf.math.real(x_fft), tf.math.imag(x_fft)], axis=1)
 
         def backward_fft(x):
             print(x.shape)
@@ -69,7 +69,7 @@ class RegenModelFft(object):
             real, imag = tf.split(x, num_or_size_splits=2, axis=1)
             x_complex = tf.complex(real, imag)
 
-            x_complex = tf.ifft(x_complex)
+            x_complex = tf.signal.ifft(x_complex)
             x_real = tf.cast(tf.abs(x_complex), dtype=tf.float32)
             return x_real
 
@@ -104,8 +104,8 @@ class FftBranches(object):
         y_target_complex = tf.cast(y_target, dtype=tf.complex64)
         y_predicted_complex = tf.cast(y_predicted, dtype=tf.complex64)
 
-        loss = tf.square(tf.abs(tf.fft(y_target_complex)) -
-                         tf.abs(tf.fft(y_predicted_complex)))
+        loss = tf.square(tf.abs(tf.signal.fft(y_target_complex)) -
+                         tf.abs(tf.signal.fft(y_predicted_complex)))
         return loss
 
     def build_model(self):
@@ -114,17 +114,17 @@ class FftBranches(object):
             y_target_complex = tf.cast(y_target, dtype=tf.complex64)
             y_predicted_complex = tf.cast(y_predicted, dtype=tf.complex64)
 
-            loss = tf.square(tf.abs(tf.fft(y_target_complex)) -
-                             tf.abs(tf.fft(y_predicted_complex)))
+            loss = tf.square(tf.abs(tf.signal.fft(y_target_complex)) -
+                             tf.abs(tf.signal.fft(y_predicted_complex)))
             return loss
 
 
         def apply_fft(x):
             x_complex = tf.cast(out, dtype=tf.complex64)
-            return tf.fft(x_complex)
+            return tf.signal.fft(x_complex)
 
         def apply_ifft(x):
-            return tf.real(tf.ifft(x))
+            return tf.math.real(tf.signal.ifft(x))
 
         def create_abs_branch(x):
 
@@ -132,7 +132,7 @@ class FftBranches(object):
 
         def create_angle_branch(x):
 
-            return tf.angle(x)
+            return tf.math.angle(x)
 
         def combine_and_inverse_fft(args):
             abs_branch, angle_branch = args
@@ -141,7 +141,7 @@ class FftBranches(object):
             imag = abs_branch * tf.sin(angle_branch)
 
             x_complex = tf.complex(real, imag)
-            x_reverse = tf.real(tf.ifft(x_complex))
+            x_reverse = tf.math.real(tf.signal.ifft(x_complex))
             return x_reverse
 
         n_nodes = self.batch_size
@@ -189,8 +189,8 @@ class FftBranchesFilter(object):
         y_target_complex = tf.cast(y_target, dtype=tf.complex64)
         y_predicted_complex = tf.cast(y_predicted, dtype=tf.complex64)
 
-        loss = tf.square(tf.abs(tf.fft(y_target_complex)) -
-                         tf.abs(tf.fft(y_predicted_complex)))
+        loss = tf.square(tf.abs(tf.signal.fft(y_target_complex)) -
+                         tf.abs(tf.signal.fft(y_predicted_complex)))
         return loss
 
     def build_model(self):
@@ -199,17 +199,16 @@ class FftBranchesFilter(object):
             y_target_complex = tf.cast(y_target, dtype=tf.complex64)
             y_predicted_complex = tf.cast(y_predicted, dtype=tf.complex64)
 
-            loss = tf.square(tf.abs(tf.fft(y_target_complex)) -
-                             tf.abs(tf.fft(y_predicted_complex)))
+            loss = tf.square(tf.abs(tf.signal.fft(y_target_complex)) -
+                             tf.abs(tf.signal.fft(y_predicted_complex)))
             return loss
-
 
         def apply_fft(x):
             x_complex = tf.cast(x, dtype=tf.complex64)
-            return tf.fft(x_complex)
+            return tf.signal.fft(x_complex)
 
         def apply_ifft(x):
-            return tf.real(tf.ifft(x))
+            return tf.math.real(tf.signal.ifft(x))
 
         def create_abs_branch(x):
 
@@ -217,7 +216,7 @@ class FftBranchesFilter(object):
 
         def create_angle_branch(x):
 
-            return tf.angle(x)
+            return tf.math.angle(x)
 
         def combine_and_inverse_fft(args):
             abs_branch, angle_branch = args
@@ -226,7 +225,7 @@ class FftBranchesFilter(object):
             imag = abs_branch * tf.sin(angle_branch)
 
             x_complex = tf.complex(real, imag)
-            x_reverse = tf.real(tf.ifft(x_complex))
+            x_reverse = tf.math.real(tf.signal.ifft(x_complex))
             return x_reverse
 
         inp = Input(shape=(self.batch_size,))
@@ -238,11 +237,11 @@ class FftBranchesFilter(object):
         angle_branch = keras.layers.Lambda(create_angle_branch, output_shape=[self.batch_size])(out)
 
         # Compute filter
-        filter_branch = Lambda(lambda x: x / self.batch_size)(angle_branch)
-        filter_branch = Dense(abs_branch.shape[1].value)(filter_branch)
+        filter_branch = Lambda(lambda x: x / self.batch_size)(abs_branch)
+        filter_branch = Dense(abs_branch.shape[1])(filter_branch)
         filter_branch = PReLU()(filter_branch)
         # filter_branch = Dropout(0.01)(filter_branch)
-        filter_branch = Dense(abs_branch.shape[1].value)(filter_branch)
+        filter_branch = Dense(abs_branch.shape[1])(filter_branch)
         filter_branch = Activation('sigmoid')(filter_branch)
 
         # Apply filter on abs branch
