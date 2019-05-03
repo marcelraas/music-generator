@@ -16,7 +16,8 @@ requirements = [
     'scikit-learn',
     'scipy',
     'pytest',
-    'moviepy'
+    'moviepy',
+    'plotly'
 ]
 
 setup(
