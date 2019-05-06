@@ -2,10 +2,6 @@
 
 #%%
 
-import keras
-from keras.layers import Dense, Dropout, PReLU
-from keras.optimizers import Adam
-
 from music_generator.basic.random import generate_dataset
 from music_generator.basic.signalproc import SamplingInfo
 from music_generator.musical.timing import Tempo
@@ -58,8 +54,8 @@ def create_data_set_guitar():
 
     from scipy.io.wavfile import read
 
-    sr, full_mix = read("../data/full-mix.wav", mmap=False)
-    sr, only_guitar = read("../data/only-guitar.wav", mmap=False)
+    sr, full_mix = read("data/full-mix.wav", mmap=False)
+    sr, only_guitar = read("data/only-guitar.wav", mmap=False)
 
     return full_mix / 2**16, only_guitar / 2**16
 
