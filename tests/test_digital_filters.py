@@ -31,7 +31,7 @@ def test_fir_filter(lead):
     fx = df.apply(lead)
 
     # wet = fx - dry
-    play_array(fx)
+    # play_array(fx)
 
     pass
 
@@ -44,7 +44,7 @@ def test_reverb_filter(lead):
     fx = df.apply(lead)
 
     # wet = fx - dry
-    play_array(fx)
+    # play_array(fx)
 
 
 def test_iir_filter(lead):
@@ -53,7 +53,7 @@ def test_iir_filter(lead):
     iir = digital_filters.IirFilter([-0.8], [8000], [0.8], [8000])
     fx = iir.apply(lead)
     wet = signalproc.mix_at(lead, -fx, 0)
-    play_array(fx, norm=1)
+    # play_array(fx, norm=1)
 
     pass
 
@@ -63,5 +63,5 @@ def test_allpass_comb_reverb(lead):
     allpass = digital_filters.CombAllPassReverb(np.linspace(0.9, 0.95, 10), np.linspace(500, 3000, 10))
     fx = allpass.apply(lead)
     wet = signalproc.mix_at(lead, fx, 0)
-    play_array(fx, norm=1)
+    # play_array(fx, norm=1)
     pass

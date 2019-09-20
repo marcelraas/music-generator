@@ -54,8 +54,8 @@ def test_adsr_generation(sampling_info):
 def test_wave_table_from_func(sampling_info):
     wt = WaveTable.from_func(4096, np.sinc)
     phase_vec = np.arange(0, 8*np.pi, 8*np.pi/501)
-    plt.plot(phase_vec, wt.eval(phase_vec))
-    plt.show()
+    # plt.plot(phase_vec, wt.eval(phase_vec))
+    # plt.show()
 
     pass
 

@@ -12,17 +12,20 @@ requirements = [
     'tensorflow>=2.0.0a0',
     'numpy',
     'pandas',
-    'matplotlib',
     'scikit-learn',
     'scipy',
     'pytest',
     'moviepy',
-    'plotly'
+    'plotly',
+    'matplotlib',
+    'pytest',
+    'simpleaudio'
 ]
+
 
 setup(
     name='music_generator',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages(),
     install_requires=requirements
 )
