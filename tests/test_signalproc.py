@@ -40,7 +40,7 @@ def test_blit():
     y = signalproc.blit(sampling_info, x, 440, 0, -1)
 
     plt.plot(x, y)
-    plt.show()
+    # plt.show()
 
     pass
 
@@ -56,8 +56,8 @@ def test_bl_square():
     # y = pos
 
     plt.plot(x, y)
-    plt.show()
-    play_array(y)
+    # plt.show()
+    # play_array(y)
 
     pass
 
