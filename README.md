@@ -1,6 +1,6 @@
 # Music-generator
 
-A python library for generating random music to be used as training set for instrument detection and score-generation from recorded audio with machine learning. 
+A python library for generating random music to be used as training set for instrument detection and score-generation from recorded audio with machine learning. As presented [(recording)](https://www.youtube.com/watch?v=epPFCdEgHxM) at [EuroPython 2018](https://ep2018.europython.eu/conference/talks/change-music-in-two-epochs).
 
 > Truth is ever to be found in simplicity, and not in the multiplicity and confusion of things.
 >
