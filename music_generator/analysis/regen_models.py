@@ -158,10 +158,10 @@ class FftBranches(object):
         angle_branch = keras.layers.Lambda(create_angle_branch, output_shape=[self.batch_size])(out)
 
         # Apply network logic on abs branch
-        abs_branch = Dense(abs_branch.shape[1].value)(abs_branch)
+        abs_branch = Dense(abs_branch.shape[1])(abs_branch)
         abs_branch = PReLU()(abs_branch)
         abs_branch = Dropout(0.01)(abs_branch)
-        abs_branch = Dense(abs_branch.shape[1].value)(abs_branch)
+        abs_branch = Dense(abs_branch.shape[1])(abs_branch)
         abs_branch = PReLU()(abs_branch)
 
         out = keras.layers.Lambda(combine_and_inverse_fft, output_shape=[self.batch_size])([abs_branch, angle_branch])
