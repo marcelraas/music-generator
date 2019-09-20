@@ -1,5 +1,6 @@
 from music_generator.analysis import regen_models
 
+
 def test_fft_branches_filter():
 
     fragment_length = 4096

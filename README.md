@@ -41,29 +41,19 @@ Activate it:
 
 ```$ source venv/bin/activate``` 
 
-Install packages:
+Install the package:
 
-```$ pip install -r requirements.txt```
+```$ pip install -e .```
 
-## Running
-
-**Before running anything**, append the project root dir to the the `PYTHONPATH` variable:
-
-```bash
-$ export PYTHONPATH=</path/to/music-generator>:${PYTHONPATH}
-```
-
-Run tests (this will make sound, so you might want to mute your speakers):
+Run tests:
 
 ```
 $ py.test tests
 ```
 
-If you get matplotlib errors google for the solution (should be easy).
-
 For installing simpleaudio you might need to install the python3-dev package.
 
-On ubuntu I also had to install:
+On Ubuntu I also had to install:
 ```bash
 sudo apt-get install libasound2-dev
 sudo apt-get install python3-tk
@@ -71,7 +61,7 @@ sudo apt-get install python3-tk
 
 You might need to install ffmpeg.
 
-Generate music:
+Generate music some music:
 
 ```
 $ python scripts/gen_random.py

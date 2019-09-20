@@ -1,9 +1,8 @@
-from music_generator.musical.notes import Note
-from music_generator.musical.timing import Signature, Tempo, Duration
-
 from copy import deepcopy
-import numpy as np
 from typing import Iterable
+
+from music_generator.music.notes import Note
+from music_generator.music.timing import Signature, Tempo, Duration
 
 
 class PositionedNote(object):
@@ -47,7 +46,7 @@ class PositionedNote(object):
 
 class Measure(object):
     def __init__(self, tempo: Tempo, signature: Signature):
-        """Create a musical measure
+        """Create a music measure
 
         Args:
             tempo: tempo

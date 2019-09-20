@@ -1,12 +1,12 @@
-from music_generator.musical.notes import Note
-from music_generator.musical.chords import Chord
-from music_generator.musical.timing import Duration, Signature, Tempo
-from music_generator.musical.score import Track, PositionedNote, Measure
+from music_generator.music.notes import Note
+from music_generator.music.chords import Chord
+from music_generator.music.timing import Duration, Signature, Tempo
+from music_generator.music.score import Track, PositionedNote, Measure
 from music_generator.synthesizer.oscillators import Generator
-from music_generator.basic.signalproc import SamplingInfo, mix_at
+from music_generator.signalproc.signalproc import mix_at
 from music_generator.synthesizer.oscillators import SquareOscillator, LinearAdsrGenerator, FilteredOscillator
 
-from music_generator.musical.utils import get_max_duration
+from music_generator.music.utils import get_max_duration
 
 import numpy as np
 
@@ -17,7 +17,7 @@ class Instrument(object):
         self.generator = generator
         self.velocity = 0.2
 
-    def generate_note(self, note: Note, duration: Duration=Duration(1), velocity: float=1):
+    def generate_note(self, note: Note, duration: Duration = Duration(1), velocity: float = 1):
         return self.generator.generate_note(note, duration.seconds, amplitude=velocity, phase=0)
 
     def generate_track(self, track: Track):
@@ -50,17 +50,6 @@ class Instrument(object):
 
 
 
-def make_bass_instrument(sampling_info):
-    osc = SquareOscillator(sampling_info)
-    base_gen = LinearAdsrGenerator(0.1e-3, 2, 0.01, 0.01, osc)
-    generator = FilteredOscillator(sampling_info,
-                                   1000,
-                                   filter_type="lowpass",
-                                   base_generator=base_gen,
-                                   order=1)
-    bass_instrument = Instrument(generator)
-    bass_instrument.velocity = 0.1
-    return bass_instrument
 
 
 def make_lead_instrument(sampling_info):

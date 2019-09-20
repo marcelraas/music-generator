@@ -2,7 +2,7 @@ from scipy.interpolate import interp1d
 import numpy as np
 from copy import copy
 
-from music_generator.basic.signalproc import SamplingInfo, apply_filter, bl_square
+from music_generator.signalproc.signalproc import SamplingInfo, apply_filter, bl_square
 
 
 class Generator(object):

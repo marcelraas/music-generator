@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 #                 'tqdm==4.28.1']
 
 requirements = [
-    'tensorflow>=2.0.0a0',
+    'tensorflow>=2.0.0-rc1',
     'numpy',
     'pandas',
     'scikit-learn',
@@ -20,7 +20,9 @@ requirements = [
     'matplotlib',
     'pytest',
     'simpleaudio',
-    'nbstripout'
+    'nbstripout',
+    'jupyter',
+    'jupyterlab',
 ]
 
 

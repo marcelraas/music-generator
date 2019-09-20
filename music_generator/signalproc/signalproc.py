@@ -1,8 +1,8 @@
-from scipy import signal, fftpack
+from copy import copy
 from functools import total_ordering
 
 import numpy as np
-import matplotlib.pyplot as plt
+from scipy import signal
 
 
 @total_ordering
@@ -134,4 +134,15 @@ def bl_square(sampling_info: SamplingInfo, phase_vec, frequency, phase_shift, nu
     return np.cumsum(pos - neg) * 4 - 2
 
 
+def mixdown(audio_tracks):
 
+    y = copy(audio_tracks[0])
+
+    for t in audio_tracks[1:]:
+        y = mix_at(y, t, at=0)
+
+    # Normalize amp
+    y = y - np.mean(y)
+    y /= 1.25*(np.percentile(y, 95) - np.percentile(y, 5))
+
+    return y

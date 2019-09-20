@@ -1,7 +1,7 @@
-from music_generator.musical.chords import Note
-from music_generator.musical.chords import MajorChordDefinition
-from music_generator.musical.chords import ChordInScaleDefinition
-from music_generator.musical.scales import GenericScale
+from music_generator.music.chords import Note
+from music_generator.music.chords import MajorChordDefinition
+from music_generator.music.chords import ChordInScaleDefinition
+from music_generator.music.scales import GenericScale
 
 def test_major_chord():
     maj = MajorChordDefinition()

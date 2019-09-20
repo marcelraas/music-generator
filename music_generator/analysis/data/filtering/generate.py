@@ -2,13 +2,13 @@
 """Regeneration of lead synth from combined signal"""
 from functools import partial
 
-from music_generator.basic.signalproc import SamplingInfo
-from music_generator.basic.random import generate_dataset
-from music_generator.musical.timing import Tempo
-from music_generator.musical.scales import GenericScale
+from music_generator.signalproc.signalproc import SamplingInfo
+from prefabs.random_walk_track import generate_dataset
+from music_generator.music.timing import Tempo
+from music_generator.music.scales import GenericScale
 from music_generator.analysis import preprocessing
 
-from music_generator.musical import scales
+from music_generator.music import scales
 from multiprocessing import Pool
 
 

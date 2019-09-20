@@ -1,14 +1,14 @@
 import pytest
 import numpy as np
 
-from music_generator.basic.random import generate_dataset
-from music_generator.musical.timing import Tempo
-from music_generator.musical.scales import GenericScale
-from music_generator.basic.signalproc import SamplingInfo
+from music_generator.prefabs.random_walk_track import generate_dataset
+from music_generator.music.timing import Tempo
+from music_generator.music.scales import GenericScale
+from music_generator.signalproc.signalproc import SamplingInfo
 
 from music_generator.effects import digital_filters
 from music_generator.analysis.play import play_array
-from music_generator.basic import signalproc
+from music_generator.signalproc import signalproc
 
 
 @pytest.fixture

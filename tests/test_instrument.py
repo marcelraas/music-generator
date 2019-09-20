@@ -1,7 +1,7 @@
 from music_generator.synthesizer.instrument import Instrument
 from music_generator.synthesizer.oscillators import AliasingSquareOscillator
-from music_generator.basic.signalproc import SamplingInfo, apply_filter
-from music_generator.musical.songs import vader_jacob
+from music_generator.signalproc.signalproc import SamplingInfo
+from music_generator.music.songs import vader_jacob
 
 from music_generator.analysis.play import play_array
 

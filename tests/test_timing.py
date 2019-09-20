@@ -1,6 +1,6 @@
-from music_generator.musical.timing import Signature
-from music_generator.musical.timing import Tempo
-from music_generator.musical.timing import Duration
+from music_generator.music.timing import Signature
+from music_generator.music.timing import Tempo
+from music_generator.music.timing import Duration
 
 
 def test_signature():

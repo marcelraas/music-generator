@@ -1,5 +1,5 @@
-from music_generator.musical.notes import Note
-from music_generator.musical.scales import GenericScale
+from music_generator.music.notes import Note
+from music_generator.music.scales import GenericScale
 
 import copy
 

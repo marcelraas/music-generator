@@ -1,6 +1,6 @@
-from music_generator.musical.notes import Note
-from music_generator.musical.timing import Tempo, Signature
-from music_generator.musical.score import Measure, Track
+from music_generator.music.notes import Note
+from music_generator.music.timing import Tempo, Signature
+from music_generator.music.score import Measure, Track
 
 
 def vader_jacob():

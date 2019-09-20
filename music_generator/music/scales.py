@@ -1,4 +1,4 @@
-from music_generator.musical.notes import Note
+from music_generator.music.notes import Note
 
 
 class GenericScale(object):

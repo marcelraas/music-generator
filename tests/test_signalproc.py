@@ -1,11 +1,9 @@
-from music_generator.basic.signalproc import SamplingInfo, apply_filter
-from music_generator.synthesizer.oscillators import SineOscillator
-from music_generator.analysis.play import play_array
-
-import pytest
 import matplotlib.pyplot as plt
-import music_generator.basic.signalproc as signalproc
+from music_generator.signalproc import signalproc
 import numpy as np
+
+from music_generator.signalproc.signalproc import SamplingInfo, apply_filter
+from music_generator.synthesizer.oscillators import SineOscillator
 
 
 def test_apply_filter():
