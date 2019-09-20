@@ -19,7 +19,8 @@ requirements = [
     'plotly',
     'matplotlib',
     'pytest',
-    'simpleaudio'
+    'simpleaudio',
+    'nbstripout'
 ]
 
 
