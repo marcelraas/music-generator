@@ -2,15 +2,15 @@
 
 #%%
 
-from music_generator.basic.random import generate_dataset
+from prefabs.random_walk_track import generate_dataset
 from music_generator.basic.signalproc import SamplingInfo
-from music_generator.musical.timing import Tempo
-from music_generator.musical.scales import GenericScale
+from music_generator.music.timing import Tempo
+from music_generator.music.scales import GenericScale
 from music_generator.analysis.play import play_mono_as_stereo, play_array
 from music_generator.basic.signalproc import mix_at
 from music_generator.analysis import preprocessing
 
-from music_generator.musical import scales
+from music_generator.music import scales
 import numpy as np
 from multiprocessing import Pool
 from functools import partial

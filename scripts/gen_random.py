@@ -3,9 +3,9 @@ import sys
 from argparse import ArgumentParser
 
 from music_generator.analysis.play import play_array
-from music_generator.basic.random import generate_dataset
-from music_generator.musical.timing import Tempo
-from music_generator.musical.scales import GenericScale
+from prefabs.random_walk_track import generate_dataset
+from music_generator.music.timing import Tempo
+from music_generator.music.scales import GenericScale
 from music_generator.basic.signalproc import SamplingInfo
 
 

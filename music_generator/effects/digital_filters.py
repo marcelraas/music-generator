@@ -5,7 +5,7 @@ Based on http://research.spa.aalto.fi/publications/theses/vaananen_mst.pdf
 
 import numpy as np
 
-from music_generator.basic import signalproc
+from music_generator.signalproc import signalproc
 
 
 class FirFilter(object):

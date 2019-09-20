@@ -1,7 +1,7 @@
-from music_generator.musical.notes import Note
-from music_generator.musical.timing import Tempo, Signature, Duration
-from music_generator.musical.score import Measure
-from music_generator.musical.utils import get_max_duration
+from music_generator.music.notes import Note
+from music_generator.music.timing import Tempo, Signature, Duration
+from music_generator.music.score import Measure
+from music_generator.music.utils import get_max_duration
 
 
 def test_max_duration():

@@ -1,11 +1,9 @@
 import numpy as np
-from scipy.fftpack import rfft, irfft
+import scipy.io.wavfile as wf
+from scipy.fftpack import rfft
 
 from music_generator.basic.utils import parallel_apply_along_axis
-
-from music_generator.basic.signalproc import mix_at
-
-import scipy.io.wavfile as wf
+from music_generator.signalproc.signalproc import mix_at
 
 
 def read_wave_file(filename, channel=0):

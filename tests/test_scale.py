@@ -1,4 +1,4 @@
-from music_generator.musical.scales import GenericScale
+from music_generator.music.scales import GenericScale
 
 
 def test_generic_scale():

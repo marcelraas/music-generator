@@ -1,18 +1,12 @@
-from music_generator.synthesizer.oscillators import AdditiveOscillator
-from music_generator.synthesizer.oscillators import LinearAdsrGenerator
-from music_generator.synthesizer.oscillators import AliasingSquareOscillator
-from music_generator.synthesizer.oscillators import WaveTable
-from music_generator.synthesizer.oscillators import WaveTableOscillator
-from music_generator.basic.signalproc import SamplingInfo
-
-import music_generator.synthesizer.oscillators as oscillators
-
-from music_generator.analysis.play import play_array
-
-import matplotlib.pyplot as plt
 import numpy as np
-
 import pytest
+
+from music_generator.signalproc.signalproc import SamplingInfo
+from music_generator.synthesizer.oscillators import AdditiveOscillator
+from music_generator.synthesizer.oscillators import AliasingSquareOscillator
+from music_generator.synthesizer.oscillators import LinearAdsrGenerator
+from music_generator.synthesizer.oscillators import WaveTable
+
 
 @pytest.fixture(scope="module")
 def sampling_info():

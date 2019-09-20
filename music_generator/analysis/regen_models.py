@@ -1,7 +1,7 @@
 
 import tensorflow as tf
 from tensorflow import keras
-from music_generator.basic import signalproc
+from music_generator.signalproc import signalproc
 import numpy as np
 from tensorflow.keras.layers import Dense, Lambda, PReLU, Input, Dropout, Activation
 

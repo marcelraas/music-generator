@@ -1,6 +1,6 @@
 import numpy as np
 
-from music_generator.musical.notes import Note, _A4_BASE
+from music_generator.music.notes import Note, _A4_BASE
 
 
 def test_semitones():
